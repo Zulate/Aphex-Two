@@ -8,7 +8,9 @@
 		{
 			"name":"Scene",
 			"nodes":[
-				0
+				0,
+				1,
+				2
 			]
 		}
 	],
@@ -16,6 +18,46 @@
 		{
 			"mesh":0,
 			"name":"Cube.009"
+		},
+		{
+			"mesh":1,
+			"name":"glass-screen",
+			"rotation":[
+				0.7071068286895752,
+				0,
+				0,
+				0.7071068286895752
+			],
+			"scale":[
+				0.9952078461647034,
+				1,
+				0.7777054309844971
+			],
+			"translation":[
+				0.09954230487346649,
+				0.9388800263404846,
+				0.5617519021034241
+			]
+		},
+		{
+			"mesh":2,
+			"name":"screen-plane",
+			"rotation":[
+				0.7071068286895752,
+				0,
+				0,
+				0.7071068286895752
+			],
+			"scale":[
+				1.004655122756958,
+				1,
+				0.7863664627075195
+			],
+			"translation":[
+				0.09747467935085297,
+				0.9293633103370667,
+				0.5587365627288818
+			]
 		}
 	],
 	"meshes":[
@@ -31,13 +73,39 @@
 					"indices":3
 				}
 			]
+		},
+		{
+			"name":"Plane",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":4,
+						"NORMAL":5,
+						"TEXCOORD_0":6
+					},
+					"indices":7
+				}
+			]
+		},
+		{
+			"name":"Plane.001",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":8,
+						"NORMAL":9,
+						"TEXCOORD_0":10
+					},
+					"indices":11
+				}
+			]
 		}
 	],
 	"accessors":[
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":50953,
+			"count":42765,
 			"max":[
 				3.5402896404266357,
 				2.0316529273986816,
@@ -53,51 +121,167 @@
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":50953,
+			"count":42765,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":50953,
+			"count":42765,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":95592,
+			"count":82932,
+			"type":"SCALAR"
+		},
+		{
+			"bufferView":4,
+			"componentType":5126,
+			"count":4096,
+			"max":[
+				1.0000001192092896,
+				0.14455433189868927,
+				1.0000001192092896
+			],
+			"min":[
+				-1.0000001192092896,
+				0.000324826076393947,
+				-1.0000001192092896
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":5,
+			"componentType":5126,
+			"count":4096,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":6,
+			"componentType":5126,
+			"count":4096,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":7,
+			"componentType":5123,
+			"count":6144,
+			"type":"SCALAR"
+		},
+		{
+			"bufferView":8,
+			"componentType":5126,
+			"count":4,
+			"max":[
+				1,
+				0,
+				1
+			],
+			"min":[
+				-1,
+				0,
+				-1
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":9,
+			"componentType":5126,
+			"count":4,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":10,
+			"componentType":5126,
+			"count":4,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":11,
+			"componentType":5123,
+			"count":6,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":611436,
+			"byteLength":513180,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":611436,
-			"byteOffset":611436,
+			"byteLength":513180,
+			"byteOffset":513180,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":407624,
-			"byteOffset":1222872,
+			"byteLength":342120,
+			"byteOffset":1026360,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":191184,
-			"byteOffset":1630496,
+			"byteLength":165864,
+			"byteOffset":1368480,
+			"target":34963
+		},
+		{
+			"buffer":0,
+			"byteLength":49152,
+			"byteOffset":1534344,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":49152,
+			"byteOffset":1583496,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":32768,
+			"byteOffset":1632648,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":12288,
+			"byteOffset":1665416,
+			"target":34963
+		},
+		{
+			"buffer":0,
+			"byteLength":48,
+			"byteOffset":1677704,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":48,
+			"byteOffset":1677752,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":32,
+			"byteOffset":1677800,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":12,
+			"byteOffset":1677832,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":1821680,
+			"byteLength":1677844,
 			"uri":"basement.bin"
 		}
 	]
