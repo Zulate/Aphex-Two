@@ -2,6 +2,11 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 /* import { OrbitControls } from 'three/addons/controls/OrbitControls.js'; */
 import { GUI } from 'dat.gui';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { screenPlane1 } from './resources/shaders/screenPlane1.js';
+import { screenPlane2 } from './resources/shaders/screenPlane2.js';
 
 const scene = new THREE.Scene();
 const fov = 30;
@@ -24,7 +29,7 @@ renderer.setAnimationLoop(animate);
 document.body.appendChild(renderer.domElement);
 
 // Lights
-const MainSpotlight = new THREE.SpotLight(0xffffff, 150);
+const MainSpotlight = new THREE.SpotLight(0xffffff, 50);
 MainSpotlight.position.set(0, 10, 2);
 MainSpotlight.penumbra = 0.3;
 MainSpotlight.castShadow = true;
@@ -54,57 +59,103 @@ gltfLoader.load('resources/models/basement.gltf', (gltf) => {
   initModelLogic(desk);
 });
 
+const glassRoughnessTexture = new THREE.TextureLoader().load('resources/textures/shader-1-displacement.jpg');
+
 const glassScreen = new THREE.MeshPhysicalMaterial({
-  color: 0x00ffffff,
+  color: 0xffffff,
   transparent: true,
-  opacity: 0.5,
-  reflectivity: 0.9,
-  roughness: 0.1,
-  ior: 1.6,
+  opacity: 1,
+  reflectivity: 0.5,
+  roughness: 0.2,
+  ior: 2,
   transmission: 1,
-  thickness: 2,
+  thickness: 0.5,
 });
+
+// Videotextur laden
+const video = document.createElement('video');
+video.src = 'resources/textures/catjam-texture-2.mp4'; // Pfad zum Video
+video.crossOrigin = 'anonymous';
+video.loop = true;
+video.muted = true;
+video.play();
+
+const videoTexture = new THREE.VideoTexture(video);
+videoTexture.minFilter = THREE.LinearFilter;
+videoTexture.magFilter = THREE.LinearFilter;
+videoTexture.format = THREE.RGBFormat;
+
+// Displacement-Map laden (z. B. Noise-Textur)
+const displacementTexture = new THREE.TextureLoader().load('resources/textures/shader-1-displacement.jpg');
 
 const screenPlane = new THREE.ShaderMaterial({
   uniforms: {
     time: { value: 0.0 },
     resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
     mousePosition: { value: new THREE.Vector2(0.5, 0.5) },
+    videoTexture: { value: videoTexture },
+    displacementMap: { value: displacementTexture },
+    displacementStrength: { value: 0.1 }
   },
   vertexShader: `
-  varying vec2 vUv;
+    varying vec2 vUv;
+    uniform sampler2D displacementMap;
+    uniform float time;
+    uniform float displacementStrength;
+    uniform vec2 mousePosition;
 
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
+    void main() {
+      vUv = uv;
+
+      // Hole Displacement-Value aus Noise-Textur
+      float displacement = texture2D(displacementMap, uv + vec2(time * 0.01, 0.0)).r;
+
+      // Mausinteraktion einbeziehen
+      float mouseDist = distance(uv, mousePosition);
+      float mouseEffect = smoothstep(0.3, 0.0, mouseDist);
+
+      // Wellenbewegung + Mausinteraktion
+      float wave = sin(uv.y * 20.0 + time * 0.5);
+
+      vec3 displacedPosition = position + normal * displacement * displacementStrength * (1.0 + wave * 0.2 + mouseEffect * 2.0);
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
+    }
   `,
   fragmentShader: `
-    uniform float time;
+    uniform sampler2D videoTexture;
     uniform vec2 mousePosition;
+    uniform float time;
     varying vec2 vUv;
 
     void main() {
-      vec2 dist = vUv - mousePosition;
-      float distFactor = length(dist) * 1.0;
+      // Wellenartige Verzerrung der UVs
+      vec2 uvDistorted = vUv + 0.01 * vec2(
+        sin(vUv.y * 30.0 + time * 0.3),
+        cos(vUv.x * 30.0 + time * 0.2)
+      );
 
-      float noise = sin(vUv.y * 100.0 + time * 2.0) * 0.5 + 0.5;
-      float scanlines = step(0.1, mod(vUv.y * 1000.0, 4.0));
+      // Video-Textur abrufen
+      vec3 videoColor = texture2D(videoTexture, uvDistorted).rgb;
 
-      vec3 color = vec3(1.0, 1.0, 1.0) * (noise * distFactor);
-      color *= scanlines;
+      // Leichte Betonung um Maus
+      float mouseDist = distance(vUv, mousePosition);
+      float glow = smoothstep(0.2, 0.0, mouseDist);
+      vec3 mouseHighlight = vec3(0.3, 1.0, 0.3) * glow;
 
-      gl_FragColor = vec4(color, 1.0);
+      // Farbmanipulation und Kontrastanhebung
+      vec3 finalColor = videoColor * 2.5 + mouseHighlight;
+
+      gl_FragColor = vec4(finalColor, 1.0);
     }
   `,
-  side: THREE.FrontSide,
-  transparent: false,  // Ensure transparency is enabled for the effect
+  side: THREE.DoubleSide,
+  transparent: false,
 });
 
-const material3 = new THREE.MeshStandardMaterial({ color: 0x0f0f0f });
+const material3 = new THREE.MeshStandardMaterial({ color: 0xffffff });
 
 let screenMesh;  // This will store the screen-plane mesh
-const boundingBox = new THREE.Box3();  // To store the bounding box of the screen mesh
 
 function initModelLogic(model) {
   model.traverse((child) => {
@@ -137,29 +188,15 @@ ground.position.y = -3;
 ground.receiveShadow = true;
 scene.add(ground);
 
-var exposure = 10.0;
-camera.exposure = exposure;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = exposure;
+renderer.toneMappingExposure = 5;
 
-// GUI
-const gui = new GUI();
-const lightSettings = {
-  intensity: MainSpotlight.intensity,
-  color: MainSpotlight.color.getHex(),
-};
-
-gui.add(lightSettings, 'intensity', 0, 300).onChange((value) => {
-  MainSpotlight.intensity = value;
-});
-gui.addColor(lightSettings, 'color').onChange((value) => {
-  MainSpotlight.color.set(value);
-});
-
+// Event-Listeners
 window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
+  composer.setSize(window.innerWidth, window.innerHeight);
 });
 
 const raycaster = new THREE.Raycaster();
@@ -192,17 +229,84 @@ renderer.domElement.addEventListener('mousemove', (event) => {
     const localPos = point.clone().sub(min).divide(size);
 
     // Optional: Y umkehren, wenn Shader das erwartet
-    const uvX = localPos.x;
-    const uvY = 1.0 - localPos.y;
+    const uvX = 1.0 - localPos.x;
+    const uvY = localPos.y;
 
     screenPlane.uniforms.mousePosition.value.set(uvX, uvY);
+    screenPlane1.uniforms.mousePosition.value.set(uvX, uvY);
+    screenPlane2.uniforms.mousePosition.value.set(uvX, uvY);
   }
+});
+
+// Setup for postprocessing
+const renderScene = new RenderPass(scene, camera);
+
+var strength = 0.6;
+var radius = 1.5;
+var threshold = 0.5;
+
+const bloomPass = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  strength, // strength
+  radius, // radius
+  threshold // threshold
+);
+
+console.log(bloomPass.strenght);
+
+const composer = new EffectComposer(renderer);
+composer.addPass(renderScene);
+composer.addPass(bloomPass);
+
+let shaderSelect = 0;
+const shaderMaterials = [screenPlane, screenPlane1, screenPlane2];
+
+// GUI
+const gui = new GUI();
+const lightSettings = {
+  intensity: MainSpotlight.intensity,
+  lightColor: MainSpotlight.color.getHex(),
+  exposure: renderer.toneMappingExposure,
+  bloomStrenght: bloomPass.strength,
+  bloomRadius: bloomPass.radius,
+  bloomThreshold: bloomPass.threshold,
+  selectShader: shaderSelect,
+};
+
+gui.add(lightSettings, 'intensity', 0, 300).onChange((value) => {
+  MainSpotlight.intensity = value;
+});
+gui.add(lightSettings, 'exposure', 0, 100).onChange((value) => {
+  renderer.toneMappingExposure = value;
+});
+
+gui.add(lightSettings, 'selectShader', 0, 2,1).onChange((value) => {
+  shaderSelect = value;
+  screenMesh.material = shaderMaterials[shaderSelect];
+});
+
+gui.addColor(lightSettings, 'lightColor').onChange((value) => {
+  MainSpotlight.color.set(value);
+});
+
+const bloomFolder = gui.addFolder('Bloom Einstellungen');
+bloomFolder.add(lightSettings, 'bloomStrenght', 0, 2).onChange((value) => {
+  bloomPass.strength = value;
+});
+bloomFolder.add(lightSettings, 'bloomRadius', 0, 2).onChange((value) => {
+  bloomPass.radius = value;
+});
+bloomFolder.add(lightSettings, 'bloomThreshold', 0, 1).onChange((value) => {
+  bloomPass.threshold = value;
 });
 
 function animate() {
 /*   controls.update(); */
-  screenPlane.uniforms.time.value += 0.05;
-  renderer.render(scene, camera);
+  const currentTime = performance.now() * 0.001;
+  screenPlane.uniforms.time.value = currentTime;
+  screenPlane1.uniforms.time.value = currentTime;
+  screenPlane2.uniforms.time.value = currentTime;
+  composer.render(); 
 }
 
 animate();
