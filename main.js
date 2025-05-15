@@ -7,9 +7,10 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { screenPlane1 } from './resources/shaders/screenPlane1.js';
 import { screenPlane2 } from './resources/shaders/screenPlane2.js';
+import { outline } from 'three/examples/jsm/tsl/display/OutlineNode.js';
 
 const scene = new THREE.Scene();
-const fov = 30;
+const fov = 35;
 const aspect = 2;
 const near = 0.1;
 const far = 10000;
@@ -17,6 +18,7 @@ const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const renderer = new THREE.WebGLRenderer();
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(window.devicePixelRatio * 0.4);
 
 /* const controls = new OrbitControls(camera, renderer.domElement); */
 
@@ -56,7 +58,7 @@ MainSpotlight.shadow.radius = 4;
 
 scene.add(MainSpotlight);
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
 
 // model laden
@@ -178,10 +180,11 @@ function initModelLogic(model) {
           screenMesh = child;  // Save the reference to the screen-plane mesh
           break;
         default:
-          child.material = new THREE.MeshPhysicalMaterial({ color: 0x0f0f0f });
+          if(child.material.name === '') {
+            child.material = new THREE.MeshStandardMaterial({ color: 0x0f0f0f });
+          }
+          break;
       }
-    } else {
-      child.material = new THREE.MeshPhysicalMaterial({ color: 0x00ff00 });
     }
   });
 }
