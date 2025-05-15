@@ -23,9 +23,7 @@ renderer.setPixelRatio(window.devicePixelRatio * 0.4);
 /* const controls = new OrbitControls(camera, renderer.domElement); */
 
 camera.position.z = 3;
-camera.position.y = 10;
-
-console.log(camera.rotation.x, camera.rotation.y);
+camera.position.y = 8;
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setAnimationLoop(animate);
@@ -47,9 +45,9 @@ MainSpotlight.target = dummyTarget;
 MainSpotlight.lookAt(dummyTarget.position);
 
 const cameraTarget = new THREE.Object3D();
-cameraTarget.position.set(0,0,0);
+cameraTarget.position.set(0,2,-10);
 
-console.log(camera.lookAt(cameraTarget.position));
+camera.lookAt(cameraTarget.position);
 
 // weichere Schatten
 MainSpotlight.shadow.mapSize.width = 4096;
@@ -211,6 +209,14 @@ window.addEventListener('resize', () => {
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
+document.getElementById('pan-left').addEventListener('click', () => {
+  console.log("pan left");
+})
+
+document.getElementById('pan-right').addEventListener('click', () => {
+  console.log("pan right");
+})
+
 renderer.domElement.addEventListener('mousemove', (event) => {
   if (!screenMesh) return;
 
@@ -218,9 +224,9 @@ renderer.domElement.addEventListener('mousemove', (event) => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-  camera.rotation.y = -(mouse.x / (window.innerWidth / 16));
-  camera.rotation.z = -(mouse.x / (window.innerWidth / 32));
-  camera.rotation.x = 31.25 + (mouse.y / (window.innerHeight / 16)) - 0.4;
+  cameraTarget.position.z = -(mouse.x / (window.innerWidth));
+  cameraTarget.position.y = (mouse.y / (window.innerHeight) * 100);
+  
 
   raycaster.setFromCamera(mouse, camera);
 
@@ -309,6 +315,7 @@ bloomFolder.add(lightSettings, 'bloomThreshold', 0, 1).onChange((value) => {
 
 function animate() {
 /*   controls.update(); */
+  camera.lookAt(cameraTarget.position);
   const currentTime = performance.now() * 0.001;
   screenPlane.uniforms.time.value = currentTime;
   screenPlane1.uniforms.time.value = currentTime;
