@@ -20,22 +20,23 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 /* const controls = new OrbitControls(camera, renderer.domElement); */
 
-camera.position.z = 8;
-camera.position.y = 4;
-camera.rotation.x = -0.4;
+camera.position.z = 3;
+camera.position.y = 10;
+
+console.log(camera.rotation.x, camera.rotation.y);
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setAnimationLoop(animate);
 document.body.appendChild(renderer.domElement);
 
 // Lights
-const MainSpotlight = new THREE.SpotLight(0xffffff, 50);
-MainSpotlight.position.set(0, 10, 2);
-MainSpotlight.penumbra = 0.3;
+const MainSpotlight = new THREE.SpotLight(0xffffff, 175);
+MainSpotlight.position.set(0, 15, 2);
+MainSpotlight.penumbra = 0.1;
 MainSpotlight.castShadow = true;
 MainSpotlight.angle = Math.PI / 4;
-MainSpotlight.distance = 30;
-MainSpotlight.decay = 2;
+MainSpotlight.distance = 100;
+MainSpotlight.decay = 1.5;
 
 const dummyTarget = new THREE.Object3D();
 dummyTarget.position.set(0, 0, 0);
@@ -43,12 +44,20 @@ scene.add(dummyTarget);
 MainSpotlight.target = dummyTarget;
 MainSpotlight.lookAt(dummyTarget.position);
 
+const cameraTarget = new THREE.Object3D();
+cameraTarget.position.set(0,0,0);
+
+console.log(camera.lookAt(cameraTarget.position));
+
 // weichere Schatten
 MainSpotlight.shadow.mapSize.width = 4096;
 MainSpotlight.shadow.mapSize.height = 4096;
 MainSpotlight.shadow.radius = 4;
 
 scene.add(MainSpotlight);
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+scene.add(ambientLight);
 
 // model laden
 let desk;
@@ -153,8 +162,6 @@ const screenPlane = new THREE.ShaderMaterial({
   transparent: false,
 });
 
-const material3 = new THREE.MeshStandardMaterial({ color: 0xffffff });
-
 let screenMesh;  // This will store the screen-plane mesh
 
 function initModelLogic(model) {
@@ -170,12 +177,11 @@ function initModelLogic(model) {
           child.material = screenPlane;
           screenMesh = child;  // Save the reference to the screen-plane mesh
           break;
-        case 'Cube009':
-          child.material = material3;
-          break;
         default:
-          child.material = new THREE.MeshPhysicalMaterial({ color: 0x000000 });
+          child.material = new THREE.MeshPhysicalMaterial({ color: 0x0f0f0f });
       }
+    } else {
+      child.material = new THREE.MeshPhysicalMaterial({ color: 0x00ff00 });
     }
   });
 }
@@ -189,7 +195,7 @@ ground.receiveShadow = true;
 scene.add(ground);
 
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 5;
+renderer.toneMappingExposure = 10;
 
 // Event-Listeners
 window.addEventListener('resize', () => {
@@ -211,7 +217,7 @@ renderer.domElement.addEventListener('mousemove', (event) => {
 
   camera.rotation.y = -(mouse.x / (window.innerWidth / 16));
   camera.rotation.z = -(mouse.x / (window.innerWidth / 32));
-  camera.rotation.x = (mouse.y / (window.innerHeight / 16)) - 0.4;
+  camera.rotation.x = 31.25 + (mouse.y / (window.innerHeight / 16)) - 0.4;
 
   raycaster.setFromCamera(mouse, camera);
 
@@ -251,8 +257,6 @@ const bloomPass = new UnrealBloomPass(
   radius, // radius
   threshold // threshold
 );
-
-console.log(bloomPass.strenght);
 
 const composer = new EffectComposer(renderer);
 composer.addPass(renderScene);
