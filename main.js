@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-/* import { OrbitControls } from 'three/addons/controls/OrbitControls.js'; */
 import { GUI } from 'dat.gui';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -8,6 +7,10 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { screenPlane1 } from './resources/shaders/screenPlane1.js';
 import { screenPlane2 } from './resources/shaders/screenPlane2.js';
 import { outline } from 'three/examples/jsm/tsl/display/OutlineNode.js';
+import { vec3 } from 'three/tsl';
+import { Vector3 } from 'three/webgpu';
+
+/* import { OrbitControls } from 'three/addons/controls/OrbitControls.js'; */
 
 const scene = new THREE.Scene();
 const fov = 35;
@@ -18,12 +21,11 @@ const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const renderer = new THREE.WebGLRenderer();
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.setPixelRatio(window.devicePixelRatio * 0.4);
+renderer.setPixelRatio(window.devicePixelRatio * 1.5);
 
 /* const controls = new OrbitControls(camera, renderer.domElement); */
 
-camera.position.z = 3;
-camera.position.y = 8;
+camera.position.set(0, 8, 2); /* x y z */
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setAnimationLoop(animate);
@@ -45,8 +47,10 @@ MainSpotlight.target = dummyTarget;
 MainSpotlight.lookAt(dummyTarget.position);
 
 const cameraTarget = new THREE.Object3D();
-cameraTarget.position.set(0,2,-10);
-
+cameraTarget.position.set(0, 2.5, -10);
+let lastTargetY = cameraTarget.position.y;
+let lastTargetX = cameraTarget.position.x;
+let lastTargetZ = cameraTarget.position.z;
 camera.lookAt(cameraTarget.position);
 
 // weichere Schatten
@@ -209,14 +213,6 @@ window.addEventListener('resize', () => {
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-document.getElementById('pan-left').addEventListener('click', () => {
-  console.log("pan left");
-})
-
-document.getElementById('pan-right').addEventListener('click', () => {
-  console.log("pan right");
-})
-
 renderer.domElement.addEventListener('mousemove', (event) => {
   if (!screenMesh) return;
 
@@ -224,8 +220,8 @@ renderer.domElement.addEventListener('mousemove', (event) => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-  cameraTarget.position.z = -(mouse.x / (window.innerWidth));
-  cameraTarget.position.y = (mouse.y / (window.innerHeight) * 100);
+  newPosition.x = lastTargetX + (mouse.x / (window.innerWidth) * 200);
+  newPosition.y = lastTargetY + (mouse.y / (window.innerHeight) * 200);
   
 
   raycaster.setFromCamera(mouse, camera);
@@ -253,6 +249,47 @@ renderer.domElement.addEventListener('mousemove', (event) => {
   }
 });
 
+// changig cameraTarget position
+let oldPosition = cameraTarget.position;
+let newPosition = cameraTarget.position;
+
+document.getElementById('pan-left').addEventListener('click', () => {
+  if(lastTargetX === 0){
+    oldPosition = cameraTarget.position;
+    newPosition = new Vector3(-4, 5, 0.5);
+    lastTargetX = newPosition.x;
+    lastTargetZ = newPosition.z;
+    lastTargetY = newPosition.y;
+
+  } else if (lastTargetX === 4) {
+    cameraTarget.position.set(0, 2.5, -10);
+    lastTargetX = cameraTarget.position.x;
+    lastTargetZ = cameraTarget.position.z;
+    lastTargetY = cameraTarget.position.y;
+
+  } else{
+    console.log("nichts passiert");
+  }
+})
+
+document.getElementById('pan-right').addEventListener('click', () => {
+  if(lastTargetX === 0){
+    cameraTarget.position.set(4, 5, 0.5);
+    lastTargetX = cameraTarget.position.x;
+    lastTargetZ = cameraTarget.position.z;
+    lastTargetY = cameraTarget.position.y;
+
+  } else if (lastTargetX === -4) {
+    cameraTarget.position.set(0, 2.5, -10);
+    lastTargetX = cameraTarget.position.x;
+    lastTargetZ = cameraTarget.position.z;
+    lastTargetY = cameraTarget.position.y;
+
+  } else{
+    console.log("nichts passiert");
+  }
+})
+
 // Setup for postprocessing
 const renderScene = new RenderPass(scene, camera);
 
@@ -270,6 +307,7 @@ const bloomPass = new UnrealBloomPass(
 const composer = new EffectComposer(renderer);
 composer.addPass(renderScene);
 composer.addPass(bloomPass);
+
 
 let shaderSelect = 0;
 const shaderMaterials = [screenPlane, screenPlane1, screenPlane2];
@@ -313,14 +351,17 @@ bloomFolder.add(lightSettings, 'bloomThreshold', 0, 1).onChange((value) => {
   bloomPass.threshold = value;
 });
 
+
 function animate() {
+  cameraTarget.position.lerpVectors(oldPosition, newPosition, 0.05);
 /*   controls.update(); */
   camera.lookAt(cameraTarget.position);
   const currentTime = performance.now() * 0.001;
   screenPlane.uniforms.time.value = currentTime;
   screenPlane1.uniforms.time.value = currentTime;
   screenPlane2.uniforms.time.value = currentTime;
-  composer.render(); 
+  composer.render();
+
 }
 
 animate();
