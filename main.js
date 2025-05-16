@@ -70,6 +70,7 @@ gltfLoader.load('resources/models/basement.gltf', (gltf) => {
   desk = gltf.scene;
   scene.add(desk);
   initModelLogic(desk);
+  console.log(gltf.scene);
 });
 
 const glassRoughnessTexture = new THREE.TextureLoader().load('resources/textures/shader-1-displacement.jpg');
@@ -167,6 +168,7 @@ const screenPlane = new THREE.ShaderMaterial({
 });
 
 let screenMesh;  // This will store the screen-plane mesh
+let corgiMesh;
 
 function initModelLogic(model) {
   model.traverse((child) => {
@@ -181,6 +183,10 @@ function initModelLogic(model) {
           child.material = screenPlane;
           screenMesh = child;  // Save the reference to the screen-plane mesh
           break;
+        case 'corgi':
+          corgiMesh = child;
+
+        break;
         default:
           if(child.material.name === '') {
             child.material = new THREE.MeshStandardMaterial({ color: 0x0f0f0f });
@@ -247,7 +253,22 @@ renderer.domElement.addEventListener('mousemove', (event) => {
     screenPlane1.uniforms.mousePosition.value.set(uvX, uvY);
     screenPlane2.uniforms.mousePosition.value.set(uvX, uvY);
   }
+
+  // interaction raycaster
+
+  const objectRayCaster = new THREE.Raycaster();
+  objectRayCaster.setFromCamera(mouse, camera);
+  const corgiIntersects = objectRayCaster.intersectObject(corgiMesh);
+
+  if(objectRayCaster.intersectObject(corgiMesh).length > 0) {
+    corgiMesh.material.color.set(0xff0000);
+  } else {
+    corgiMesh.material.color.set(0x000000);
+  }
 });
+
+
+
 
 // changig cameraTarget position
 let oldPosition = cameraTarget.position;
