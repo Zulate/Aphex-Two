@@ -260,13 +260,14 @@ document.getElementById('pan-left').addEventListener('click', () => {
     lastTargetX = newPosition.x;
     lastTargetZ = newPosition.z;
     lastTargetY = newPosition.y;
-
+    console.log("kamera hat nach links bewegt");
   } else if (lastTargetX === 4) {
-    cameraTarget.position.set(0, 2.5, -10);
-    lastTargetX = cameraTarget.position.x;
-    lastTargetZ = cameraTarget.position.z;
-    lastTargetY = cameraTarget.position.y;
-
+    oldPosition = cameraTarget.position;
+    newPosition = new Vector3(0, 2.5, -10);
+    lastTargetX = newPosition.x;
+    lastTargetZ = newPosition.z;
+    lastTargetY = newPosition.y;
+    console.log("kamera hat nach mitte bewegt");
   } else{
     console.log("nichts passiert");
   }
@@ -274,16 +275,20 @@ document.getElementById('pan-left').addEventListener('click', () => {
 
 document.getElementById('pan-right').addEventListener('click', () => {
   if(lastTargetX === 0){
-    cameraTarget.position.set(4, 5, 0.5);
-    lastTargetX = cameraTarget.position.x;
-    lastTargetZ = cameraTarget.position.z;
-    lastTargetY = cameraTarget.position.y;
+    oldPosition = cameraTarget.position;
+    newPosition = new Vector3(4, 5, 0.5);
+    lastTargetX = newPosition.x;
+    lastTargetZ = newPosition.z;
+    lastTargetY = newPosition.y;
+    console.log("kamera hat nach rechts bewegt");
 
   } else if (lastTargetX === -4) {
-    cameraTarget.position.set(0, 2.5, -10);
-    lastTargetX = cameraTarget.position.x;
-    lastTargetZ = cameraTarget.position.z;
-    lastTargetY = cameraTarget.position.y;
+    oldPosition = cameraTarget.position;
+    newPosition = new Vector3(0, 2.5, -10);
+    lastTargetX = newPosition.x;
+    lastTargetZ = newPosition.z;
+    lastTargetY = newPosition.y;
+    console.log("kamera hat nach mitte bewegt");
 
   } else{
     console.log("nichts passiert");
