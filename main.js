@@ -21,7 +21,7 @@ const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const renderer = new THREE.WebGLRenderer();
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.setPixelRatio(window.devicePixelRatio * 1.5);
+/* renderer.setPixelRatio(window.devicePixelRatio * 1.5); */
 
 /* const controls = new OrbitControls(camera, renderer.domElement); */
 
@@ -168,7 +168,9 @@ const screenPlane = new THREE.ShaderMaterial({
 });
 
 let screenMesh;  // This will store the screen-plane mesh
-let corgiMesh;
+let Keys1;
+let Keys2;
+let Keys3;
 
 function initModelLogic(model) {
   model.traverse((child) => {
@@ -183,9 +185,14 @@ function initModelLogic(model) {
           child.material = screenPlane;
           screenMesh = child;  // Save the reference to the screen-plane mesh
           break;
-        case 'corgi':
-          corgiMesh = child;
-
+        case 'Keys-1':
+          Keys1 = child;
+        break;
+        case 'Keys-2':
+          Keys2 = child;
+        break;
+        case 'Keys-3':
+          Keys3 = child;
         break;
         default:
           if(child.material.name === '') {
@@ -258,12 +265,23 @@ renderer.domElement.addEventListener('mousemove', (event) => {
 
   const objectRayCaster = new THREE.Raycaster();
   objectRayCaster.setFromCamera(mouse, camera);
-  const corgiIntersects = objectRayCaster.intersectObject(corgiMesh);
 
-  if(objectRayCaster.intersectObject(corgiMesh).length > 0) {
-    corgiMesh.material.color.set(0xff0000);
-  } else {
-    corgiMesh.material.color.set(0x000000);
+  if(objectRayCaster.intersectObject(Keys1).length > 0) {
+    Keys1.material.color.set(0xff0000);
+    Keys2.material.color.set(0xffffff);
+    Keys3.material.color.set(0xffffff);
+  } else if(objectRayCaster.intersectObject(Keys2).length > 0) {
+    Keys1.material.color.set(0xffffff);
+    Keys2.material.color.set(0xff0000);
+    Keys3.material.color.set(0xffffff);
+  } else if(objectRayCaster.intersectObject(Keys3).length > 0) {
+    Keys1.material.color.set(0xffffff);
+    Keys2.material.color.set(0xffffff);
+    Keys3.material.color.set(0xff0000);
+  }else {
+    Keys1.material.color.set(0xffffff);
+    Keys2.material.color.set(0xffffff);
+    Keys3.material.color.set(0xffffff);
   }
 });
 
