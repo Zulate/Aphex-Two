@@ -22,7 +22,7 @@ const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const renderer = new THREE.WebGLRenderer();
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-/* renderer.setPixelRatio(window.devicePixelRatio * 1.5); */
+/* renderer.setPixelRatio(window.devicePixelRatio * 0.4); */
 
 /* const controls = new OrbitControls(camera, renderer.domElement); */
 
@@ -33,7 +33,7 @@ renderer.setAnimationLoop(animate);
 document.body.appendChild(renderer.domElement);
 
 // Lights
-const MainSpotlight = new THREE.SpotLight(0xffffff, 175);
+const MainSpotlight = new THREE.SpotLight(0xffffff, 75);
 MainSpotlight.position.set(0, 15, 2);
 MainSpotlight.penumbra = 0.1;
 MainSpotlight.castShadow = true;
@@ -55,13 +55,12 @@ let lastTargetZ = cameraTarget.position.z;
 camera.lookAt(cameraTarget.position);
 
 // weichere Schatten
-MainSpotlight.shadow.mapSize.width = 4096;
-MainSpotlight.shadow.mapSize.height = 4096;
-MainSpotlight.shadow.radius = 4;
+MainSpotlight.shadow.mapSize.width = 2056;
+MainSpotlight.shadow.mapSize.height = 2056;
 
 scene.add(MainSpotlight);
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
 scene.add(ambientLight);
 
 // model laden
@@ -214,7 +213,7 @@ ground.receiveShadow = true;
 scene.add(ground);
 
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 5;
+renderer.toneMappingExposure = 3;
 
 // Event-Listeners
 window.addEventListener('resize', () => {
@@ -355,7 +354,7 @@ document.getElementById('pan-right').addEventListener('click', () => {
 const renderScene = new RenderPass(scene, camera);
 
 var strength = 0.6;
-var radius = 1.5;
+var radius = 1.2;
 var threshold = 0.5;
 
 const bloomPass = new UnrealBloomPass(
