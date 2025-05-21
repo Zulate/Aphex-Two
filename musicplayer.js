@@ -1,42 +1,63 @@
+///////////////////////////////////////////////////////
+// File: musicplayer.js
+// Working: Iacopo Turano
+// 
+// Description: manages music player system,
+//              recieves input from 3d scene
+//              and plays the corresponding sound
+//
+///////////////////////////////////////////////////////
+//
+// ToDo: - Tidy up code (done)
+//       - Add more samples
+//       - Fix audio sync
+//
+///////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////
+// Global variables
+
+// Player variables
 let currentBeat = 0;
 let trackList = [[], []];
 
-// Buttons 
+// 3D scene inputs 
 let keys1 = "paused";
 let keys2 = "paused";
 let keys3 = "paused";
 
+// DOM objects
 const xtalBass = document.getElementById("xtal-bass");
 const xtalDrums = document.getElementById("xtal-drums");
 const xtalMelody = document.getElementById("xtal-melody");
 
-/*
-const playxtalBass = document.getElementById("play-xtal-bass");
-const playxtalDrums = document.getElementById("play-xtal-drums");
-const playxtalMelody = document.getElementById("play-xtal-melody");
+///////////////////////////////////////////////////////
+// Main
 
+window.onload = setup; // calls setup() when page loads
 
-playxtalBass.addEventListener("click", () => buttonsHandler(playxtalBass));
-playxtalDrums.addEventListener("click", () => buttonsHandler(playxtalDrums));
-playxtalMelody.addEventListener("click", () => buttonsHandler(playxtalMelody));
-*/
-
-trackList[0] = [keys1, keys2, keys3];
-trackList[1] = document.querySelectorAll("audio");
-
-trackList[1].forEach(audio => audio.loop = true);
-
-console.log(trackList[0]);
-console.log(trackList[1]);
-
-window.onload = setup;
-
+//----------------------------------------------------
 function setup()
+//----------------------------------------------------
 {
+    // Set loop for each audio
+    trackList[1].forEach(audio => audio.loop = true);
+
+    // Set up tracklist
+    trackList[0] = [keys1, keys2, keys3];
+    trackList[1] = document.querySelectorAll("audio");
+    
+    // Debug
+    console.log(trackList[0]);
+    console.log(trackList[1]);
+
+    // Fire loop
     setInterval(loop, bpmToMilliseconds(115));
 }
 
+//----------------------------------------------------
 function loop()
+//----------------------------------------------------
 {  
     if(currentBeat == 1) {
         trackList[0].forEach(playerHandler);
@@ -50,14 +71,21 @@ function loop()
     }
 }
 
+///////////////////////////////////////////////////////
+// Functions
+
+// Convert BPM to milliseconds
+//----------------------------------------------------
 function bpmToMilliseconds(bpm)
+//----------------------------------------------------
 {
     return 60000 / bpm;
 }
 
-// Get clicked mesh from scene
-// This is fucking stupid, but scene code structure forces me to do this
+// Get 3D scene input
+//----------------------------------------------------
 export function buttonsReader(button)
+//----------------------------------------------------
 {
     console.log(button); // use to check correct name of button clicked
     
@@ -77,9 +105,11 @@ export function buttonsReader(button)
     }
 }
 
-// Originally used to manage buttons state
-// Too bad I guess
-function buttonsHandler(index) {
+// Buttons state machine
+//----------------------------------------------------
+function buttonsHandler(index) 
+//----------------------------------------------------
+{
     let state = trackList[0][index];
 
     switch(state) {
@@ -98,8 +128,11 @@ function buttonsHandler(index) {
     }
 }
 
-
-function playerHandler(buttonState, index) {
+// Music player manager
+//----------------------------------------------------
+function playerHandler(buttonState, index) 
+//----------------------------------------------------
+{
     const audio = trackList[1][index];
 
     switch(buttonState) {
@@ -110,7 +143,7 @@ function playerHandler(buttonState, index) {
             break;
 
         case "waiting":
-            audio.currentTime = 0; // sync start
+            audio.currentTime = 0;
             audio.play();
             trackList[0][index] = "playing";
             break;

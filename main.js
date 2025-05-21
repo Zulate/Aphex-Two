@@ -1,5 +1,26 @@
+///////////////////////////////////////////////////////
+// File: main.js
+// Working: Marco Stalder, Iacopo Turano
+// 
+// Description: manages music player system,
+//              recieves input from 3d scene
+//              and plays the corresponding sound
+//
+///////////////////////////////////////////////////////
+//
+// ToDo: - Tidy up code
+//       - Add 3d interactions
+//       - Finish scene
+//
+///////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////
+// Imports
+
+// musicplayer.js
 import { buttonsReader } from './musicplayer.js';
 
+// three.js
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GUI } from 'dat.gui';
@@ -13,6 +34,10 @@ import { DirectionalLight, Vector3 } from 'three/webgpu';
 
 /* import { OrbitControls } from 'three/addons/controls/OrbitControls.js'; */
 
+///////////////////////////////////////////////////////
+// Global variables
+
+// Scene
 const scene = new THREE.Scene();
 const fov = 35;
 const aspect = 2;
@@ -20,17 +45,18 @@ const near = 0.1;
 const far = 10000;
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const renderer = new THREE.WebGLRenderer();
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-/* renderer.setPixelRatio(window.devicePixelRatio * 0.4); */
 
-/* const controls = new OrbitControls(camera, renderer.domElement); */
-
-camera.position.set(0, 8, 2); /* x y z */
+camera.position.set(0, 8, 2); // x y z 
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setAnimationLoop(animate);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
 document.body.appendChild(renderer.domElement);
+
+/* renderer.setPixelRatio(window.devicePixelRatio * 0.4); */
+/* const controls = new OrbitControls(camera, renderer.domElement); */
 
 // Lights
 const MainSpotlight = new THREE.SpotLight(0xffffff, 75);
@@ -41,27 +67,25 @@ MainSpotlight.angle = Math.PI / 4;
 MainSpotlight.distance = 100;
 MainSpotlight.decay = 1.5;
 
-const dummyTarget = new THREE.Object3D();
-dummyTarget.position.set(0, 0, 0);
-scene.add(dummyTarget);
-MainSpotlight.target = dummyTarget;
-MainSpotlight.lookAt(dummyTarget.position);
-
-const cameraTarget = new THREE.Object3D();
-cameraTarget.position.set(0, 2.5, -10);
-let lastTargetY = cameraTarget.position.y;
-let lastTargetX = cameraTarget.position.x;
-let lastTargetZ = cameraTarget.position.z;
-camera.lookAt(cameraTarget.position);
-
 // weichere Schatten
 MainSpotlight.shadow.mapSize.width = 2056;
 MainSpotlight.shadow.mapSize.height = 2056;
 
 scene.add(MainSpotlight);
 
+// Ambient Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
 scene.add(ambientLight);
+
+// Camera Target
+const cameraTarget = new THREE.Object3D();
+let lastTargetY = cameraTarget.position.y;
+let lastTargetX = cameraTarget.position.x;
+let lastTargetZ = cameraTarget.position.z;
+
+cameraTarget.position.set(0, 2.5, -10);
+camera.lookAt(cameraTarget.position);
+
 
 // model laden
 let desk;
