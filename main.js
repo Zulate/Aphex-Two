@@ -1,3 +1,5 @@
+import { buttonsReader } from './musicplayer.js';
+
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GUI } from 'dat.gui';
@@ -284,8 +286,24 @@ renderer.domElement.addEventListener('mousemove', (event) => {
   }
 });
 
+renderer.domElement.addEventListener('click', (event) => {
+  const objectRayCaster = new THREE.Raycaster();
+  objectRayCaster.setFromCamera(mouse, camera);
+
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
 
+  if(objectRayCaster.intersectObject(Keys1).length > 0) {
+    buttonsReader(Keys1.name);
+  } else if(objectRayCaster.intersectObject(Keys2).length > 0) {
+    buttonsReader(Keys2.name);
+  } else if(objectRayCaster.intersectObject(Keys3).length > 0) {
+    buttonsReader(Keys3.name);
+  }else {
+    console.log("Nothing clicked");
+  }
+});
 
 // changig cameraTarget position
 let oldPosition = cameraTarget.position;
