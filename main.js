@@ -4,11 +4,10 @@ import { GUI } from 'dat.gui';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { screenPlane1 } from './resources/shaders/screenPlane1.js';
-import { screenPlane2 } from './resources/shaders/screenPlane2.js';
-import { outline } from 'three/examples/jsm/tsl/display/OutlineNode.js';
+import { screenPlane1 } from '/resources/shaders/screenPlane1.js';
+import { screenPlane2 } from '/resources/shaders/screenPlane2.js';
 import { vec3 } from 'three/tsl';
-import { Vector3 } from 'three/webgpu';
+import { DirectionalLight, Vector3 } from 'three/webgpu';
 
 /* import { OrbitControls } from 'three/addons/controls/OrbitControls.js'; */
 
@@ -213,7 +212,7 @@ ground.receiveShadow = true;
 scene.add(ground);
 
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 10;
+renderer.toneMappingExposure = 5;
 
 // Event-Listeners
 window.addEventListener('resize', () => {
