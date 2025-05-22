@@ -59,7 +59,7 @@ document.body.appendChild(renderer.domElement);
 /* const controls = new OrbitControls(camera, renderer.domElement); */
 
 // Lights
-const MainSpotlight = new THREE.SpotLight(0xffffff, 75);
+const MainSpotlight = new THREE.SpotLight(0xffffff, 125);
 MainSpotlight.position.set(0, 15, 2);
 MainSpotlight.penumbra = 0.1;
 MainSpotlight.castShadow = true;
@@ -79,11 +79,11 @@ scene.add(ambientLight);
 
 // Camera Target
 const cameraTarget = new THREE.Object3D();
+cameraTarget.position.set(0, 2.5, -10);
 let lastTargetY = cameraTarget.position.y;
 let lastTargetX = cameraTarget.position.x;
 let lastTargetZ = cameraTarget.position.z;
 
-cameraTarget.position.set(0, 2.5, -10);
 camera.lookAt(cameraTarget.position);
 
 
@@ -195,6 +195,10 @@ let screenMesh;  // This will store the screen-plane mesh
 let Keys1;
 let Keys2;
 let Keys3;
+let Ridges1;
+let Ridges1Buttons;
+let Ridges2;
+let Ridges2Buttons;
 
 function initModelLogic(model) {
   model.traverse((child) => {
@@ -217,6 +221,18 @@ function initModelLogic(model) {
         break;
         case 'Keys-3':
           Keys3 = child;
+        break;
+        case 'ridges-1':
+          Ridges1 = child;
+        break;
+        case 'ridges-1-buttons':
+          Ridges1Buttons = child;
+        break;
+        case 'ridges-2':
+          Ridges2 = child;
+        break;
+        case 'ridges-2-buttons':
+          Ridges2Buttons = child;
         break;
         default:
           if(child.material.name === '') {
@@ -302,10 +318,18 @@ renderer.domElement.addEventListener('mousemove', (event) => {
     Keys1.material.color.set(0xffffff);
     Keys2.material.color.set(0xffffff);
     Keys3.material.color.set(0xff0000);
+  }else if(objectRayCaster.intersectObject(Ridges1).length > 0 || objectRayCaster.intersectObject(Ridges1Buttons).length > 0) {
+    Ridges1.material.color.set(0xff0000);
+    Ridges1Buttons.material.color.set(0xff0000);
+  }else if (objectRayCaster.intersectObject(Ridges2).length > 0 || objectRayCaster.intersectObject(Ridges2Buttons).length > 0) {
+    Ridges2.material.color.set(0xff0000);
+    Ridges2Buttons.material.color.set(0xff0000);
   }else {
     Keys1.material.color.set(0xffffff);
     Keys2.material.color.set(0xffffff);
     Keys3.material.color.set(0xffffff);
+    Ridges1.material.color.set(0x000000);
+    Ridges2.material.color.set(0x000000);
   }
 });
 
