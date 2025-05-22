@@ -41,8 +41,8 @@ import { DirectionalLight, Vector3 } from 'three/webgpu';
 const scene = new THREE.Scene();
 const fov = 35;
 const aspect = 2;
-const near = 0.1;
-const far = 10000;
+const near = 1;
+const far = 30;
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const renderer = new THREE.WebGLRenderer();
 
@@ -51,6 +51,7 @@ camera.position.set(0, 8, 2); // x y z
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setAnimationLoop(animate);
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.autoUpdate = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 document.body.appendChild(renderer.domElement);
@@ -59,22 +60,26 @@ document.body.appendChild(renderer.domElement);
 /* const controls = new OrbitControls(camera, renderer.domElement); */
 
 // Lights
-const MainSpotlight = new THREE.SpotLight(0xffffff, 125);
+const MainSpotlight = new THREE.SpotLight(0xffffff, 150);
 MainSpotlight.position.set(0, 15, 2);
-MainSpotlight.penumbra = 0.1;
-MainSpotlight.castShadow = true;
 MainSpotlight.angle = Math.PI / 4;
-MainSpotlight.distance = 100;
+MainSpotlight.distance = 30;
 MainSpotlight.decay = 1.5;
 
-// weichere Schatten
-MainSpotlight.shadow.mapSize.width = 2056;
-MainSpotlight.shadow.mapSize.height = 2056;
+MainSpotlight.penumbra = 0.3;
+MainSpotlight.castShadow = true;
+MainSpotlight.shadow.mapSize.set(1024, 1024);
+MainSpotlight.shadow.radius = 0;
+MainSpotlight.shadow.normalBias = 0.05;
+
+console.log(renderer.shadowMap);
 
 scene.add(MainSpotlight);
 
+
+
 // Ambient Light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 // Camera Target
@@ -85,7 +90,7 @@ let lastTargetX = cameraTarget.position.x;
 let lastTargetZ = cameraTarget.position.z;
 
 camera.lookAt(cameraTarget.position);
-
+MainSpotlight.lookAt(cameraTarget.position);
 
 // model laden
 let desk;
@@ -249,7 +254,6 @@ const groundMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
 ground.position.y = -3;
-ground.receiveShadow = true;
 scene.add(ground);
 
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -414,6 +418,8 @@ const bloomPass = new UnrealBloomPass(
 
 const composer = new EffectComposer(renderer);
 composer.addPass(renderScene);
+composer.renderTarget1.samples = 16;
+composer.renderTarget2.samples = 16;
 composer.addPass(bloomPass);
 
 
