@@ -8,7 +8,8 @@
 //
 ///////////////////////////////////////////////////////
 //
-// ToDo: - Tidy up code
+// ToDo: - Tidy up code (done)
+//       - Anonymize object interactions
 //       - Add 3d interactions
 //       - Finish scene
 //
@@ -76,8 +77,6 @@ console.log(renderer.shadowMap);
 
 scene.add(MainSpotlight);
 
-
-
 // Ambient Light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
@@ -92,7 +91,59 @@ let lastTargetZ = cameraTarget.position.z;
 camera.lookAt(cameraTarget.position);
 MainSpotlight.lookAt(cameraTarget.position);
 
-// model laden
+// Mouse
+const mouse = new THREE.Vector2();
+
+// Camera positions
+let oldPosition = cameraTarget.position;
+let newPosition = cameraTarget.position;
+
+// Ppostprocessing
+const renderScene = new RenderPass(scene, camera);
+
+var strength = 0.6;
+var radius = 1.2;
+var threshold = 0.5;
+
+const bloomPass = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  strength, // strength
+  radius, // radius
+  threshold // threshold
+);
+
+// Composer
+const composer = new EffectComposer(renderer);
+composer.addPass(renderScene);
+composer.renderTarget1.samples = 16;
+composer.renderTarget2.samples = 16;
+composer.addPass(bloomPass);
+
+// 3D interactive objects
+let screenMesh;  // This will store the screen-plane mesh
+let Keys1;
+let Keys2;
+let Keys3;
+let Ridges1;
+let Ridges1Buttons;
+let Ridges2;
+let Ridges2Buttons;
+
+///////////////////////////////////////////////////////
+// Loading models and textures
+
+// Ground
+const groundGeo = new THREE.PlaneGeometry(100, 100);
+const groundMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -3;
+scene.add(ground);
+
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 3;
+
+// Desk
 let desk;
 const gltfLoader = new GLTFLoader();
 gltfLoader.load('resources/models/basement.gltf', (gltf) => {
@@ -102,6 +153,7 @@ gltfLoader.load('resources/models/basement.gltf', (gltf) => {
   console.log(gltf.scene);
 });
 
+// Glass
 const glassRoughnessTexture = new THREE.TextureLoader().load('resources/textures/shader-1-displacement.jpg');
 
 const glassScreen = new THREE.MeshPhysicalMaterial({
@@ -115,7 +167,7 @@ const glassScreen = new THREE.MeshPhysicalMaterial({
   thickness: 0.5,
 });
 
-// Videotextur laden
+// Video
 const video = document.createElement('video');
 video.src = 'resources/textures/catjam-texture-2.mp4'; // Pfad zum Video
 video.crossOrigin = 'anonymous';
@@ -196,16 +248,27 @@ const screenPlane = new THREE.ShaderMaterial({
   transparent: false,
 });
 
-let screenMesh;  // This will store the screen-plane mesh
-let Keys1;
-let Keys2;
-let Keys3;
-let Ridges1;
-let Ridges1Buttons;
-let Ridges2;
-let Ridges2Buttons;
+// GUI
+const gui = new GUI();
+let shaderSelect = 0;
+const shaderMaterials = [screenPlane, screenPlane1, screenPlane2];
+const lightSettings = {
+  intensity: MainSpotlight.intensity,
+  lightColor: MainSpotlight.color.getHex(),
+  exposure: renderer.toneMappingExposure,
+  bloomStrenght: bloomPass.strength,
+  bloomRadius: bloomPass.radius,
+  bloomThreshold: bloomPass.threshold,
+  selectShader: shaderSelect,
+};
 
-function initModelLogic(model) {
+///////////////////////////////////////////////////////
+// Functions
+
+//----------------------------------------------------
+function initModelLogic(model)
+//----------------------------------------------------
+{
   model.traverse((child) => {
     if (child.isMesh) {
       child.castShadow = true;
@@ -249,18 +312,31 @@ function initModelLogic(model) {
   });
 }
 
-const groundGeo = new THREE.PlaneGeometry(100, 100);
-const groundMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
-const ground = new THREE.Mesh(groundGeo, groundMat);
-ground.rotation.x = -Math.PI / 2;
-ground.position.y = -3;
-scene.add(ground);
+//----------------------------------------------------
+function animate() 
+//----------------------------------------------------
+{
+  cameraTarget.position.lerpVectors(oldPosition, newPosition, 0.05);
+/*   controls.update(); */
+  camera.lookAt(cameraTarget.position);
+  const currentTime = performance.now() * 0.001;
+  screenPlane.uniforms.time.value = currentTime;
+  screenPlane1.uniforms.time.value = currentTime;
+  screenPlane2.uniforms.time.value = currentTime;
+  composer.render();
 
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 3;
+}
+
+animate();
+
+///////////////////////////////////////////////////////
+// Events
 
 // Event-Listeners
-window.addEventListener('resize', () => {
+//----------------------------------------------------
+window.addEventListener('resize', () => 
+//----------------------------------------------------  
+{
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -268,9 +344,11 @@ window.addEventListener('resize', () => {
 });
 
 const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
 
-renderer.domElement.addEventListener('mousemove', (event) => {
+//----------------------------------------------------
+renderer.domElement.addEventListener('mousemove', (event) => 
+//----------------------------------------------------  
+{
   if (!screenMesh) return;
 
   // Mausposition im Normalized Device Coordinate Space (-1 bis 1)
@@ -356,11 +434,10 @@ renderer.domElement.addEventListener('click', (event) => {
   }
 });
 
-// changig cameraTarget position
-let oldPosition = cameraTarget.position;
-let newPosition = cameraTarget.position;
-
-document.getElementById('pan-left').addEventListener('click', () => {
+//----------------------------------------------------
+document.getElementById('pan-left').addEventListener('click', () => 
+//----------------------------------------------------  
+{
   if(lastTargetX === 0){
     oldPosition = cameraTarget.position;
     newPosition = new Vector3(-4, 5, 0.5);
@@ -380,7 +457,10 @@ document.getElementById('pan-left').addEventListener('click', () => {
   }
 })
 
-document.getElementById('pan-right').addEventListener('click', () => {
+//----------------------------------------------------
+document.getElementById('pan-right').addEventListener('click', () => 
+//----------------------------------------------------  
+{
   if(lastTargetX === 0){
     oldPosition = cameraTarget.position;
     newPosition = new Vector3(4, 5, 0.5);
@@ -402,80 +482,53 @@ document.getElementById('pan-right').addEventListener('click', () => {
   }
 })
 
-// Setup for postprocessing
-const renderScene = new RenderPass(scene, camera);
-
-var strength = 0.6;
-var radius = 1.2;
-var threshold = 0.5;
-
-const bloomPass = new UnrealBloomPass(
-  new THREE.Vector2(window.innerWidth, window.innerHeight),
-  strength, // strength
-  radius, // radius
-  threshold // threshold
-);
-
-const composer = new EffectComposer(renderer);
-composer.addPass(renderScene);
-composer.renderTarget1.samples = 16;
-composer.renderTarget2.samples = 16;
-composer.addPass(bloomPass);
-
-
-let shaderSelect = 0;
-const shaderMaterials = [screenPlane, screenPlane1, screenPlane2];
-
-// GUI
-const gui = new GUI();
-const lightSettings = {
-  intensity: MainSpotlight.intensity,
-  lightColor: MainSpotlight.color.getHex(),
-  exposure: renderer.toneMappingExposure,
-  bloomStrenght: bloomPass.strength,
-  bloomRadius: bloomPass.radius,
-  bloomThreshold: bloomPass.threshold,
-  selectShader: shaderSelect,
-};
-
-gui.add(lightSettings, 'intensity', 0, 300).onChange((value) => {
+//----------------------------------------------------
+gui.add(lightSettings, 'intensity', 0, 300).onChange((value) => 
+//----------------------------------------------------  
+{
   MainSpotlight.intensity = value;
 });
-gui.add(lightSettings, 'exposure', 0, 100).onChange((value) => {
+
+//----------------------------------------------------
+gui.add(lightSettings, 'exposure', 0, 100).onChange((value) => 
+//----------------------------------------------------
+{
   renderer.toneMappingExposure = value;
 });
 
-gui.add(lightSettings, 'selectShader', 0, 2,1).onChange((value) => {
+//----------------------------------------------------
+gui.add(lightSettings, 'selectShader', 0, 2,1).onChange((value) => 
+//----------------------------------------------------  
+{
   shaderSelect = value;
   screenMesh.material = shaderMaterials[shaderSelect];
 });
 
-gui.addColor(lightSettings, 'lightColor').onChange((value) => {
+//----------------------------------------------------
+gui.addColor(lightSettings, 'lightColor').onChange((value) => 
+//----------------------------------------------------  
+{
   MainSpotlight.color.set(value);
 });
 
 const bloomFolder = gui.addFolder('Bloom Einstellungen');
-bloomFolder.add(lightSettings, 'bloomStrenght', 0, 2).onChange((value) => {
+//----------------------------------------------------
+bloomFolder.add(lightSettings, 'bloomStrenght', 0, 2).onChange((value) => 
+//----------------------------------------------------  
+{
   bloomPass.strength = value;
 });
-bloomFolder.add(lightSettings, 'bloomRadius', 0, 2).onChange((value) => {
+
+//----------------------------------------------------
+bloomFolder.add(lightSettings, 'bloomRadius', 0, 2).onChange((value) => 
+//----------------------------------------------------  
+{
   bloomPass.radius = value;
 });
-bloomFolder.add(lightSettings, 'bloomThreshold', 0, 1).onChange((value) => {
+
+//----------------------------------------------------
+bloomFolder.add(lightSettings, 'bloomThreshold', 0, 1).onChange((value) => 
+//----------------------------------------------------  
+{
   bloomPass.threshold = value;
 });
-
-
-function animate() {
-  cameraTarget.position.lerpVectors(oldPosition, newPosition, 0.05);
-/*   controls.update(); */
-  camera.lookAt(cameraTarget.position);
-  const currentTime = performance.now() * 0.001;
-  screenPlane.uniforms.time.value = currentTime;
-  screenPlane1.uniforms.time.value = currentTime;
-  screenPlane2.uniforms.time.value = currentTime;
-  composer.render();
-
-}
-
-animate();

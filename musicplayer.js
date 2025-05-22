@@ -40,13 +40,13 @@ window.onload = setup; // calls setup() when page loads
 function setup()
 //----------------------------------------------------
 {
+     // Set up tracklist
+    trackList[0] = [keys1, keys2, keys3];
+    trackList[1] = document.querySelectorAll("audio");
+
     // Set loop for each audio
     trackList[1].forEach(audio => audio.loop = true);
 
-    // Set up tracklist
-    trackList[0] = [keys1, keys2, keys3];
-    trackList[1] = document.querySelectorAll("audio");
-    
     // Debug
     console.log(trackList[0]);
     console.log(trackList[1]);
