@@ -27,9 +27,14 @@ let keys2 = "paused";
 let keys3 = "paused";
 
 // DOM objects
-const xtalBass = document.getElementById("xtal-bass");
-const xtalDrums = document.getElementById("xtal-drums");
-const xtalMelody = document.getElementById("xtal-melody");
+const xtalBass1 = document.getElementById("xtal-bass-1");
+const xtalBass2 = document.getElementById("xtal-bass-2");
+
+const xtalDrums1 = document.getElementById("xtal-drums-1");
+const xtalDrums2 = document.getElementById("xtal-drums-2");
+
+const xtalMelody1 = document.getElementById("xtal-melody-1");
+const xtalMelody2 = document.getElementById("xtal-melody-2");
 
 ///////////////////////////////////////////////////////
 // Main
@@ -40,7 +45,7 @@ window.onload = setup; // calls setup() when page loads
 function setup()
 //----------------------------------------------------
 {
-     // Set up tracklist
+    // Set up tracklist
     trackList[0] = [keys1, keys2, keys3];
     trackList[1] = document.querySelectorAll("audio");
 
