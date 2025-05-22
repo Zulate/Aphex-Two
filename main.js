@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////
 //
 // ToDo: - Tidy up code (done)
-//       - Anonymize object interactions
+//       - Anonymize object interactions (ongoing, need to fix ridges and ridges buttons)
 //       - Add 3d interactions
 //       - Finish scene
 //
@@ -128,6 +128,8 @@ let Ridges1;
 let Ridges1Buttons;
 let Ridges2;
 let Ridges2Buttons;
+
+const interactiveObjects = [];
 
 ///////////////////////////////////////////////////////
 // Loading models and textures
@@ -283,24 +285,31 @@ function initModelLogic(model)
           break;
         case 'Keys-1':
           Keys1 = child;
+          interactiveObjects.push(Keys1);
         break;
         case 'Keys-2':
           Keys2 = child;
+          interactiveObjects.push(Keys2);
         break;
         case 'Keys-3':
           Keys3 = child;
+          interactiveObjects.push(Keys3);
         break;
         case 'ridges-1':
           Ridges1 = child;
+          interactiveObjects.push(Ridges1);
         break;
         case 'ridges-1-buttons':
           Ridges1Buttons = child;
+          interactiveObjects.push(Ridges1Buttons);
         break;
         case 'ridges-2':
           Ridges2 = child;
+          interactiveObjects.push(Ridges2);
         break;
         case 'ridges-2-buttons':
           Ridges2Buttons = child;
+          interactiveObjects.push(Ridges2Buttons);
         break;
         default:
           if(child.material.name === '') {
@@ -310,6 +319,8 @@ function initModelLogic(model)
       }
     }
   });
+
+  console.log(interactiveObjects);
 }
 
 //----------------------------------------------------
@@ -388,6 +399,15 @@ renderer.domElement.addEventListener('mousemove', (event) =>
   const objectRayCaster = new THREE.Raycaster();
   objectRayCaster.setFromCamera(mouse, camera);
 
+  interactiveObjects.forEach((object) => {
+    if(objectRayCaster.intersectObject(object).length > 0) {
+      object.material.color.set(0xff0000);
+    } else {
+      object.material.color.set(0xffffff);
+    }
+  });
+
+/*
   if(objectRayCaster.intersectObject(Keys1).length > 0) {
     Keys1.material.color.set(0xff0000);
     Keys2.material.color.set(0xffffff);
@@ -412,7 +432,7 @@ renderer.domElement.addEventListener('mousemove', (event) =>
     Keys3.material.color.set(0xffffff);
     Ridges1.material.color.set(0x000000);
     Ridges2.material.color.set(0x000000);
-  }
+  }*/
 });
 
 renderer.domElement.addEventListener('click', (event) => {
