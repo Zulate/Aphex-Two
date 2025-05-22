@@ -319,8 +319,6 @@ function initModelLogic(model)
       }
     }
   });
-
-  console.log(interactiveObjects);
 }
 
 //----------------------------------------------------
@@ -435,23 +433,36 @@ renderer.domElement.addEventListener('mousemove', (event) =>
   }*/
 });
 
-renderer.domElement.addEventListener('click', (event) => {
+//----------------------------------------------------
+renderer.domElement.addEventListener('click', (event) => 
+//----------------------------------------------------  
+{
   const objectRayCaster = new THREE.Raycaster();
   objectRayCaster.setFromCamera(mouse, camera);
 
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-
+  interactiveObjects.forEach((object) => {
+    if(objectRayCaster.intersectObject(object).length > 0) {
+      buttonsReader(object.name);
+    }
+  });
+  
+/*
   if(objectRayCaster.intersectObject(Keys1).length > 0) {
     buttonsReader(Keys1.name);
   } else if(objectRayCaster.intersectObject(Keys2).length > 0) {
     buttonsReader(Keys2.name);
   } else if(objectRayCaster.intersectObject(Keys3).length > 0) {
     buttonsReader(Keys3.name);
+  } else if(objectRayCaster.intersectObject(Ridges1).length > 0 || objectRayCaster.intersectObject(Ridges1Buttons).length > 0) {
+    buttonsReader(Ridges1.name);
+  }else if (objectRayCaster.intersectObject(Ridges2).length > 0 || objectRayCaster.intersectObject(Ridges2Buttons).length > 0) {
+    buttonsReader(Ridges2.name);
   }else {
     console.log("Nothing clicked");
-  }
+  }*/
 });
 
 //----------------------------------------------------

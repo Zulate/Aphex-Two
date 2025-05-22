@@ -25,6 +25,9 @@ let trackList = [[], []];
 let keys1 = "paused";
 let keys2 = "paused";
 let keys3 = "paused";
+let ridges1 = "paused";
+let ridges2 = "paused";
+
 
 // DOM objects
 const xtalBass1 = document.getElementById("xtal-bass-1");
@@ -46,7 +49,7 @@ function setup()
 //----------------------------------------------------
 {
     // Set up tracklist
-    trackList[0] = [keys1, keys2, keys3];
+    trackList[0] = [keys1, keys2, keys3, ridges1, ridges2];
     trackList[1] = document.querySelectorAll("audio");
 
     // Set loop for each audio
@@ -103,6 +106,12 @@ export function buttonsReader(button)
             break;
         case "Keys-3":
             buttonsHandler(2);
+            break;
+        case "Ridges-1":
+            buttonsHandler(3);
+            break;
+        case "Ridges-2":
+            buttonsHandler(4);
             break;
         default:
             console.log("buttonsReader error!");
