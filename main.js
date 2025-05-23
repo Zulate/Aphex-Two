@@ -71,9 +71,7 @@ MainSpotlight.penumbra = 0.3;
 MainSpotlight.castShadow = true;
 MainSpotlight.shadow.mapSize.set(1024, 1024);
 MainSpotlight.shadow.radius = 0;
-MainSpotlight.shadow.normalBias = 0.05;
-
-console.log(renderer.shadowMap);
+/* MainSpotlight.shadow.normalBias = 0.05; */
 
 scene.add(MainSpotlight);
 
@@ -124,10 +122,8 @@ let screenMesh;  // This will store the screen-plane mesh
 let Keys1;
 let Keys2;
 let Keys3;
-let Ridges1;
-let Ridges1Buttons;
-let Ridges2;
-let Ridges2Buttons;
+let leftSide;
+let rightSide;
 
 const interactiveObjects = [];
 
@@ -295,22 +291,6 @@ function initModelLogic(model)
           Keys3 = child;
           interactiveObjects.push(Keys3);
         break;
-        case 'ridges-1':
-          Ridges1 = child;
-          interactiveObjects.push(Ridges1);
-        break;
-        case 'ridges-1-buttons':
-          Ridges1Buttons = child;
-          interactiveObjects.push(Ridges1Buttons);
-        break;
-        case 'ridges-2':
-          Ridges2 = child;
-          interactiveObjects.push(Ridges2);
-        break;
-        case 'ridges-2-buttons':
-          Ridges2Buttons = child;
-          interactiveObjects.push(Ridges2Buttons);
-        break;
         default:
           if(child.material.name === '') {
             child.material = new THREE.MeshStandardMaterial({ color: 0x0f0f0f });
@@ -320,6 +300,8 @@ function initModelLogic(model)
     }
   });
 }
+
+console.log(interactiveObjects);
 
 //----------------------------------------------------
 function animate() 
