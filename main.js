@@ -124,6 +124,7 @@ let Keys2;
 let Keys3;
 let leftSide;
 let rightSide;
+let Joint;
 
 const interactiveObjects = [];
 
@@ -291,6 +292,10 @@ function initModelLogic(model)
           Keys3 = child;
           interactiveObjects.push(Keys3);
         break;
+        case 'joint':
+          Joint = child;
+          interactiveObjects.push(Joint);
+        break;
         default:
           if(child.material.name === '') {
             child.material = new THREE.MeshStandardMaterial({ color: 0x0f0f0f });
@@ -310,9 +315,8 @@ function initModelLogic(model)
       }
     }
   });
+  console.log(interactiveObjects);
 }
-
-console.log(interactiveObjects);
 
 //----------------------------------------------------
 function animate() 
