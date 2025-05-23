@@ -41,7 +41,7 @@ import { DirectionalLight, Vector3 } from 'three/webgpu';
 // Scene
 const scene = new THREE.Scene();
 const fov = 35;
-const aspect = 2;
+const aspect = innerWidth / innerHeight;
 const near = 1;
 const far = 30;
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
