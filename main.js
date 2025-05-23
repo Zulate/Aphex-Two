@@ -297,6 +297,17 @@ function initModelLogic(model)
           }
           break;
       }
+    } else if (child.type === 'Group'){
+      switch (child.name) {
+        case 'left-side':
+          leftSide = child.children[0];
+          interactiveObjects.push(leftSide);
+          break;
+        case 'right-side':
+          rightSide = child.children[0];
+          interactiveObjects.push(rightSide);
+          break;
+      }
     }
   });
 }

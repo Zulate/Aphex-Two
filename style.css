@@ -3,25 +3,55 @@
     padding: 0;
 }
 
+body{
+    overflow: hidden;
+}
+
 #pan-left{
-    background-image: url('./resources/textures/aphex-logo.png');
-    background-size: contain;
     position: absolute;
-    left: 2%;
-    top: 50%;
+    display: flex;
+    left: 0%;
+    top: 0%;
+    width: 5vw;
+    height: 100vh;
+    opacity: 0%;
+    justify-content: start;
+    align-items: center;
+    padding: 2vw;
+    transition: 1s all ease-in-out;
+}
+
+#pan-left img{
     width: 100px;
     height: 100px;
+}
+
+#pan-left:hover{
     opacity: 100%;
+    transition: 400ms all ease-in-out;
 }
 
 #pan-right{
-    background-image: url('./resources/textures/aphex-logo.png');
-    background-size: contain;
     transform: scale(-1, 1);
     position: absolute;
-    right: 2%;
-    top: 50%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 2vw;
+    right: 0%;
+    top: 0%;
+    width: 5vw;
+    height: 100vh;
+    opacity: 0%;
+    transition: 1s all ease-in-out;
+}
+
+#pan-right img{
     width: 100px;
     height: 100px;
+}
+
+#pan-right:hover{
     opacity: 100%;
+    transition: 400ms all ease-in-out;
 }
