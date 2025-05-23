@@ -39,6 +39,13 @@ const xtalDrums2 = document.getElementById("xtal-drums-2");
 const xtalMelody1 = document.getElementById("xtal-melody-1");
 const xtalMelody2 = document.getElementById("xtal-melody-2");
 
+// Audio context
+const audioContext = new AudioContext();
+const audioNodes = [];
+
+const gainNode = audioContext.createGain();
+const distortion = audioContext.createWaveShaper();
+
 ///////////////////////////////////////////////////////
 // Main
 
@@ -52,12 +59,28 @@ function setup()
     trackList[0] = [keys1, keys2, keys3, ridges1, ridges2];
     trackList[1] = document.querySelectorAll("audio");
 
-    // Set loop for each audio
-    trackList[1].forEach(audio => audio.loop = true);
+    // Set up audio context
+    trackList[1].forEach(audio => 
+    {
+        audio.loop = true;
+        const track = audioContext.createMediaElementSource(audio);
+        track.connect(gainNode);
+        track.connect(distortion);
+        audioNodes.push(track);
+    });
+
+    gainNode.connect(audioContext.destination);
+    //gainNode.gain.value = 0.5;
+
+    distortion.connect(audioContext.destination);
+    //distortion.curve = makeDistortionCurve(200);
+    distortion.oversample = "4x";
 
     // Debug
     console.log(trackList[0]);
     console.log(trackList[1]);
+    console.log(audioNodes);
+    console.log(gainNode);
 
     // Fire loop
     setInterval(loop, bpmToMilliseconds(115));
@@ -169,4 +192,17 @@ function playerHandler(buttonState, index)
             console.log("playerHandler error!");
             break;
     }
+}
+
+function makeDistortionCurve(amount) {
+  const k = typeof amount === "number" ? amount : 50;
+  const n_samples = 44100;
+  const curve = new Float32Array(n_samples);
+  const deg = Math.PI / 180;
+
+  for (let i = 0; i < n_samples; i++) {
+    const x = (i * 2) / n_samples - 1;
+    curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+  }
+  return curve;
 }
