@@ -1,7 +1,13 @@
+@font-face {
+    font-family: Helvetipixel;
+    src: url("resources/fonts/Helvetipixel.ttf");
+}
+
 *{
     margin: 0;
     padding: 0;
     -webkit-user-drag: none;
+    user-select: none;
 }
 
 body{
@@ -55,4 +61,42 @@ body{
 #pan-right:hover{
     opacity: 100%;
     transition: 400ms all ease-in-out;
+}
+
+#start-screen{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    font-family: Helvetipixel;
+    color: white;
+    transition: 400ms all ease-in-out;
+    background-image: url("/resources/textures/aphex-logo-dither.png");
+    background-size: contain;
+}
+
+#start-screen p{
+    position: absolute;
+    top: 25vh;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 10vw;
+}
+
+#loading{
+    background-color: green;
+}
+
+#start-button p{
+    cursor: pointer;
+    position: absolute;
+    top: 70vh;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+    border: 3px solid white;
+    padding: 0vw 1vw 0vw 1vw;
+    font-size: 3vw;
 }

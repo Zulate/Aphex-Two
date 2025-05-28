@@ -58,7 +58,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 document.body.appendChild(renderer.domElement);
 
-/* renderer.setPixelRatio(window.devicePixelRatio * 0.4); */
+renderer.setPixelRatio(window.devicePixelRatio * 0.6);
 /* const controls = new OrbitControls(camera, renderer.domElement); */
 
 // Lights
@@ -477,6 +477,13 @@ renderer.domElement.addEventListener('click', (event) =>
   }else {
     console.log("Nothing clicked");
   }*/
+});
+
+document.getElementById('start-button').addEventListener('click', () => {
+  document.getElementById('start-screen').style.opacity = '0%';
+  setTimeout(() => {
+    document.getElementById('start-screen').style.display = 'none';
+  }, 400)
 });
 
 //----------------------------------------------------
