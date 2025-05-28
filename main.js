@@ -20,7 +20,7 @@
 
 // musicplayer.js
 import { buttonsReader } from './musicplayer.js';
-import { makeDistortionCurve } from './musicplayer.js';
+import { applyBiquadFilter } from './musicplayer.js';
 
 // three.js
 import * as THREE from 'three';
@@ -397,9 +397,9 @@ renderer.domElement.addEventListener('mousemove', (event) =>
     screenPlane1.uniforms.mousePosition.value.set(uvX, uvY);
     screenPlane2.uniforms.mousePosition.value.set(uvX, uvY);
 
-    makeDistortionCurve(true, uvY * 100);
+    applyBiquadFilter(uvX, uvY, true);
   } else {
-    makeDistortionCurve(false, 0);
+    applyBiquadFilter(0, 0, false);
   }
 
   // interaction raycaster
@@ -408,7 +408,7 @@ renderer.domElement.addEventListener('mousemove', (event) =>
   objectRayCaster.setFromCamera(mouse, camera);
 
   interactiveObjects.forEach((object) => {
-    if(objectRayCaster.intersectObject(object).length > 1) {
+    if(objectRayCaster.intersectObject(object).length > 0) {
       object.material.color.set(0xff9429);
     } else {
       if (object.name === 'Cube064' || object.name === 'Cube098') {

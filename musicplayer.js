@@ -45,6 +45,7 @@ const audioNodes = [];
 
 const gainNode = audioContext.createGain();
 const distortion = audioContext.createWaveShaper();
+const biquadFilter = audioContext.createBiquadFilter();
 
 ///////////////////////////////////////////////////////
 // Main
@@ -72,12 +73,13 @@ function setup()
     {
         audio.loop = true;
         const track = audioContext.createMediaElementSource(audio);
-        track.connect(gainNode);
         track.connect(distortion);
+        distortion.connect(biquadFilter);
+        biquadFilter.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
         audioNodes.push(track);
     });
-
-    gainNode.connect(audioContext.destination);
     
     // Debug
     console.log(trackList[0]);
@@ -197,24 +199,44 @@ function playerHandler(buttonState, index)
     }
 }
 
-export function makeDistortionCurve(state, amount) 
-{
-    if(!state) {
-        distortion.disconnect();
+export function applyBiquadFilter(uvX, uvY, state) {
+    if (!state) {
+        // Disable filter by disconnecting it (if connected) and routing clean audio
+        try {
+            biquadFilter.disconnect();
+        } catch (e) {
+            // Filter might not be connected yet – safely ignore
+        }
+
+        gainNode.disconnect();
+        distortion.connect(gainNode);
+        gainNode.connect(audioContext.destination);
         return;
     } else {
-        distortion.oversample = "4x";
-        distortion.connect(audioContext.destination);
-        console.log("makeDistortionCurve called with amount:", amount);
-        const k = typeof amount === "number" ? amount : 50;
-        const n_samples = 44100;
-        const curve = new Float32Array(n_samples);
-        const deg = Math.PI / 180;
+        // Connect filter in the chain if not already
+        try {
+            gainNode.disconnect();
+        } catch (e) {}
 
-        for (let i = 0; i < n_samples; i++) {
-            const x = (i * 2) / n_samples - 1;
-            curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
-        }
-        return curve;
+        try {
+            biquadFilter.disconnect();
+        } catch (e) {}
+
+        gainNode.connect(biquadFilter);
+        biquadFilter.connect(audioContext.destination);
+
+        // Calculate filter values
+        const minFreq = 100;
+        const maxFreq = 10000;
+        const frequency = minFreq * Math.pow(maxFreq / minFreq, uvX);
+
+        const minQ = 0.001;
+        const maxQ = 30;
+        const q = minQ + (maxQ - minQ) * uvY;
+
+        // Apply to filter
+        biquadFilter.type = "lowpass";
+        biquadFilter.frequency.setTargetAtTime(frequency, audioContext.currentTime, 0.01);
+        biquadFilter.Q.setTargetAtTime(q, audioContext.currentTime, 0.01);
     }
 }
