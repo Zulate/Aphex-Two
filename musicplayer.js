@@ -30,6 +30,12 @@ let ridgesRight = "paused";
 let dx100Left = "paused";
 let dx100Right = "paused";
 
+const soundGroups = {
+  bass: [0, 1, 2],           // Keys-1, Keys-2, Keys-3
+  drums: [3, 4],             // Cube064, Cube098
+  melody: [5, 6]             // DX100-left, DX100-right
+};
+
 // Audio context
 const audioContext = new AudioContext();
 const audioNodes = [];
@@ -149,9 +155,27 @@ export function buttonsReader(button)
 function buttonsHandler(index) 
 //----------------------------------------------------
 {
-    let state = trackList[0][index];
+    const state = trackList[0][index];
 
-    switch(state) {
+    // Detect sound group for the clicked index
+    const group = getSoundGroup(index);
+
+    if (!group) {
+        console.warn("No group found for index", index);
+        return;
+    }
+
+    // Stop all others in the same group
+    soundGroups[group].forEach(i => {
+        if (i !== index && trackList[0][i] === "playing") {
+            trackList[0][i] = "paused";
+            trackList[1][i].pause();
+            trackList[1][i].currentTime = 0;
+        }
+    });
+
+    // Toggle the clicked track's state
+    switch (state) {
         case "paused":
             trackList[0][index] = "waiting";
             break;
@@ -166,6 +190,7 @@ function buttonsHandler(index)
             break;
     }
 }
+
 
 // Music player manager
 //----------------------------------------------------
@@ -196,7 +221,11 @@ function playerHandler(buttonState, index)
     }
 }
 
-export function applyBiquadFilter(uvX, uvY, state) {
+// Apply biquad filter based on UV coordinates
+//----------------------------------------------------
+export function applyBiquadFilter(uvX, uvY, state) 
+//----------------------------------------------------
+{
     if (!state) {
         
         biquadFilter.disconnect();
@@ -225,4 +254,17 @@ export function applyBiquadFilter(uvX, uvY, state) {
         biquadFilter.frequency.setTargetAtTime(frequency, audioContext.currentTime, 0.01);
         biquadFilter.Q.setTargetAtTime(q, audioContext.currentTime, 0.01);
     }
+}
+
+// Get sound group based on index
+//----------------------------------------------------
+function getSoundGroup(index)
+//----------------------------------------------------
+{
+    for (const group in soundGroups) {
+        if (soundGroups[group].includes(index)) {
+            return group;
+        }
+    }
+    return null;
 }
