@@ -386,9 +386,9 @@ renderer.domElement.addEventListener('mousemove', (event) =>
     screenPlane1.uniforms.mousePosition.value.set(uvX, uvY);
     screenPlane2.uniforms.mousePosition.value.set(uvX, uvY);
 
-    makeDistortionCurve(true, 30);
+    makeDistortionCurve(true, uvY * 100);
   } else {
-    makeDistortionCurve(false, 30);
+    makeDistortionCurve(false, 0);
   }
 
   // interaction raycaster
