@@ -55,6 +55,14 @@ window.onload = setup; // calls setup() when page loads
 function setup()
 //----------------------------------------------------
 {
+    // Makes sure audio context is usable
+    window.addEventListener("click", () => 
+{
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+});
+
     // Set up tracklist
     trackList[0] = [keys1, keys2, keys3, ridges1, ridges2];
     trackList[1] = document.querySelectorAll("audio");
