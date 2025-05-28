@@ -25,19 +25,10 @@ let trackList = [[], []];
 let keys1 = "paused";
 let keys2 = "paused";
 let keys3 = "paused";
-let ridges1 = "paused";
-let ridges2 = "paused";
-
-
-// DOM objects
-const xtalBass1 = document.getElementById("xtal-bass-1");
-const xtalBass2 = document.getElementById("xtal-bass-2");
-
-const xtalDrums1 = document.getElementById("xtal-drums-1");
-const xtalDrums2 = document.getElementById("xtal-drums-2");
-
-const xtalMelody1 = document.getElementById("xtal-melody-1");
-const xtalMelody2 = document.getElementById("xtal-melody-2");
+let ridgesLeft = "paused";
+let ridgesRight = "paused";
+let dx100Left = "paused";
+let dx100Right = "paused";
 
 // Audio context
 const audioContext = new AudioContext();
@@ -65,7 +56,7 @@ function setup()
 });
 
     // Set up tracklist
-    trackList[0] = [keys1, keys2, keys3, ridges1, ridges2];
+    trackList[0] = [keys1, keys2, keys3, ridgesLeft, ridgesRight, dx100Left, dx100Right];
     trackList[1] = document.querySelectorAll("audio");
 
     // Set up audio context
@@ -135,11 +126,17 @@ export function buttonsReader(button)
         case "Keys-3":
             buttonsHandler(2);
             break;
-        case "Ridges-1":
+        case "Cube064":
             buttonsHandler(3);
             break;
-        case "Ridges-2":
+        case "Cube098":
             buttonsHandler(4);
+            break;
+        case "DX100-left":
+            buttonsHandler(5);
+            break;
+        case "DX100-right":
+            buttonsHandler(6);
             break;
         default:
             console.log("buttonsReader error!");
