@@ -201,33 +201,22 @@ function playerHandler(buttonState, index)
 
 export function applyBiquadFilter(uvX, uvY, state) {
     if (!state) {
-        // Disable filter by disconnecting it (if connected) and routing clean audio
-        try {
-            biquadFilter.disconnect();
-        } catch (e) {
-            // Filter might not be connected yet – safely ignore
-        }
-
+        
+        biquadFilter.disconnect();
         gainNode.disconnect();
         distortion.connect(gainNode);
         gainNode.connect(audioContext.destination);
         return;
     } else {
-        // Connect filter in the chain if not already
-        try {
-            gainNode.disconnect();
-        } catch (e) {}
-
-        try {
-            biquadFilter.disconnect();
-        } catch (e) {}
+        gainNode.disconnect();
+        biquadFilter.disconnect();
 
         gainNode.connect(biquadFilter);
         biquadFilter.connect(audioContext.destination);
 
         // Calculate filter values
-        const minFreq = 100;
-        const maxFreq = 10000;
+        const minFreq = 500;
+        const maxFreq = 4000;
         const frequency = minFreq * Math.pow(maxFreq / minFreq, uvX);
 
         const minQ = 0.001;
