@@ -150,6 +150,7 @@ gltfLoader.load('resources/models/basement.gltf', (gltf) => {
   desk = gltf.scene;
   scene.add(desk);
   initModelLogic(desk);
+  console.log(gltf.scene);
 });
 
 // Glass
