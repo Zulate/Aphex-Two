@@ -150,7 +150,6 @@ gltfLoader.load('resources/models/basement.gltf', (gltf) => {
   desk = gltf.scene;
   scene.add(desk);
   initModelLogic(desk);
-  console.log(gltf.scene);
 });
 
 // Glass
@@ -316,7 +315,6 @@ function initModelLogic(model)
       }
     }
   });
-  console.log(interactiveObjects);
 }
 
 //----------------------------------------------------
@@ -402,7 +400,11 @@ renderer.domElement.addEventListener('mousemove', (event) =>
     if(objectRayCaster.intersectObject(object).length > 0) {
       object.material.color.set(0xff0000);
     } else {
-      object.material.color.set(0xffffff);
+      if (object.name === 'Cube064' || object.name === 'Cube098') {
+        object.material.color.set(0x000000);
+      } else {
+        object.material.color.set(0xffffff);
+      }
     }
   });
 
@@ -476,14 +478,12 @@ document.getElementById('pan-left').addEventListener('click', () =>
     lastTargetX = newPosition.x;
     lastTargetZ = newPosition.z;
     lastTargetY = newPosition.y;
-    console.log("kamera hat nach links bewegt");
   } else if (lastTargetX === 4) {
     oldPosition = cameraTarget.position;
     newPosition = new Vector3(0, 2.5, -10);
     lastTargetX = newPosition.x;
     lastTargetZ = newPosition.z;
     lastTargetY = newPosition.y;
-    console.log("kamera hat nach mitte bewegt");
   } else{
     console.log("nichts passiert");
   }
@@ -499,7 +499,6 @@ document.getElementById('pan-right').addEventListener('click', () =>
     lastTargetX = newPosition.x;
     lastTargetZ = newPosition.z;
     lastTargetY = newPosition.y;
-    console.log("kamera hat nach rechts bewegt");
 
   } else if (lastTargetX === -4) {
     oldPosition = cameraTarget.position;
@@ -507,7 +506,6 @@ document.getElementById('pan-right').addEventListener('click', () =>
     lastTargetX = newPosition.x;
     lastTargetZ = newPosition.z;
     lastTargetY = newPosition.y;
-    console.log("kamera hat nach mitte bewegt");
 
   } else{
     console.log("nichts passiert");
