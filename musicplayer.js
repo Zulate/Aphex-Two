@@ -78,12 +78,7 @@ function setup()
     });
 
     gainNode.connect(audioContext.destination);
-    //gainNode.gain.value = 0.5;
-
-    distortion.connect(audioContext.destination);
-    //distortion.curve = makeDistortionCurve(200);
-    distortion.oversample = "4x";
-
+    
     // Debug
     console.log(trackList[0]);
     console.log(trackList[1]);
@@ -202,15 +197,24 @@ function playerHandler(buttonState, index)
     }
 }
 
-function makeDistortionCurve(amount) {
-  const k = typeof amount === "number" ? amount : 50;
-  const n_samples = 44100;
-  const curve = new Float32Array(n_samples);
-  const deg = Math.PI / 180;
+export function makeDistortionCurve(state, amount) 
+{
+    if(!state) {
+        distortion.disconnect();
+        return;
+    } else {
+        distortion.oversample = "4x";
+        distortion.connect(audioContext.destination);
+        console.log("makeDistortionCurve called with amount:", amount);
+        const k = typeof amount === "number" ? amount : 50;
+        const n_samples = 44100;
+        const curve = new Float32Array(n_samples);
+        const deg = Math.PI / 180;
 
-  for (let i = 0; i < n_samples; i++) {
-    const x = (i * 2) / n_samples - 1;
-    curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
-  }
-  return curve;
+        for (let i = 0; i < n_samples; i++) {
+            const x = (i * 2) / n_samples - 1;
+            curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+        }
+        return curve;
+    }
 }

@@ -20,6 +20,7 @@
 
 // musicplayer.js
 import { buttonsReader } from './musicplayer.js';
+import { makeDistortionCurve } from './musicplayer.js';
 
 // three.js
 import * as THREE from 'three';
@@ -330,7 +331,6 @@ function animate()
   screenPlane1.uniforms.time.value = currentTime;
   screenPlane2.uniforms.time.value = currentTime;
   composer.render();
-
 }
 
 animate();
@@ -387,6 +387,10 @@ renderer.domElement.addEventListener('mousemove', (event) =>
     screenPlane.uniforms.mousePosition.value.set(uvX, uvY);
     screenPlane1.uniforms.mousePosition.value.set(uvX, uvY);
     screenPlane2.uniforms.mousePosition.value.set(uvX, uvY);
+
+    makeDistortionCurve(true, 30);
+  } else {
+    makeDistortionCurve(false, 30);
   }
 
   // interaction raycaster
