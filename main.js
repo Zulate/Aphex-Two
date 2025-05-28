@@ -126,6 +126,8 @@ let Keys3;
 let leftSide;
 let rightSide;
 let Joint;
+let dx100Left;
+let dx100Right;
 
 const interactiveObjects = [];
 
@@ -297,6 +299,14 @@ function initModelLogic(model)
           Joint = child;
           interactiveObjects.push(Joint);
         break;
+        case 'DX100-left':
+          dx100Left = child;
+          interactiveObjects.push(dx100Left);
+        break;
+        case 'DX100-right':
+          dx100Right = child;
+          interactiveObjects.push(dx100Right);
+        break;
         default:
           if(child.material.name === '') {
             child.material = new THREE.MeshStandardMaterial({ color: 0x0f0f0f });
@@ -398,8 +408,8 @@ renderer.domElement.addEventListener('mousemove', (event) =>
   objectRayCaster.setFromCamera(mouse, camera);
 
   interactiveObjects.forEach((object) => {
-    if(objectRayCaster.intersectObject(object).length > 0) {
-      object.material.color.set(0xff0000);
+    if(objectRayCaster.intersectObject(object).length > 1) {
+      object.material.color.set(0xff9429);
     } else {
       if (object.name === 'Cube064' || object.name === 'Cube098') {
         object.material.color.set(0x000000);
