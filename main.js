@@ -21,6 +21,7 @@
 // musicplayer.js
 import { buttonsReader } from './musicplayer.js';
 import { applyBiquadFilter } from './musicplayer.js';
+import { biquadSelector } from './musicplayer.js';
 
 // three.js
 import * as THREE from 'three';
@@ -157,6 +158,8 @@ gltfLoader.load('resources/models/basement.gltf', (gltf) => {
 
 // Glass
 const glassRoughnessTexture = new THREE.TextureLoader().load('resources/textures/shader-1-displacement.jpg');
+let currentShaderIndex = 0;
+
 
 const glassScreen = new THREE.MeshPhysicalMaterial({
   color: 0xffffff,
@@ -451,23 +454,28 @@ renderer.domElement.addEventListener('mousemove', (event) =>
     Ridges2.material.color.set(0x000000);
   }*/
 });
-
-//----------------------------------------------------
-renderer.domElement.addEventListener('click', (event) => 
-//----------------------------------------------------  
-{
+renderer.domElement.addEventListener('click', (event) => {
   const objectRayCaster = new THREE.Raycaster();
-  objectRayCaster.setFromCamera(mouse, camera);
-
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  objectRayCaster.setFromCamera(mouse, camera);
 
-const intersects = objectRayCaster.intersectObjects(interactiveObjects, true);
-if (intersects.length > 0) {
-  const clickedObject = intersects[0].object;
-  buttonsReader(clickedObject.name);
-}
+  const intersects = objectRayCaster.intersectObjects(interactiveObjects, true);
+  if (intersects.length > 0) {
+    const clickedObject = intersects[0].object;
+    buttonsReader(clickedObject.name);
+  }
 
+  if (objectRayCaster.intersectObject(screenMesh).length > 0) {
+  currentShaderIndex = (currentShaderIndex + 1) % shaderMaterials.length;
+  screenMesh.material = shaderMaterials[currentShaderIndex];
+
+  shaderSelect = currentShaderIndex;
+  lightSettings.selectShader = currentShaderIndex;
+
+  biquadSelector();
+  }
+});
   
 /*
   if(objectRayCaster.intersectObject(Keys1).length > 0) {
@@ -483,7 +491,7 @@ if (intersects.length > 0) {
   }else {
     console.log("Nothing clicked");
   }*/
-});
+
 
 document.getElementById('continue-button').addEventListener('click', () => {
   document.getElementById('start-screen').style.opacity = '0%';
@@ -518,7 +526,7 @@ document.getElementById('pan-left').addEventListener('click', () =>
   } else{
     console.log("nichts passiert");
   }
-})
+});
 
 //----------------------------------------------------
 document.getElementById('pan-right').addEventListener('click', () => 
@@ -541,7 +549,7 @@ document.getElementById('pan-right').addEventListener('click', () =>
   } else{
     console.log("nichts passiert");
   }
-})
+});
 
 //----------------------------------------------------
 gui.add(lightSettings, 'intensity', 0, 300).onChange((value) => 

@@ -77,6 +77,8 @@ function setup()
 
         audioNodes.push(track);
     });
+
+    biquadFilter.type = "lowpass";
     
     // Debug
     console.log(trackList[0]);
@@ -221,6 +223,30 @@ function playerHandler(buttonState, index)
     }
 }
 
+// Biquad filter selector
+//----------------------------------------------------
+export function biquadSelector() 
+//----------------------------------------------------
+{
+    switch(biquadFilter.type) {
+        case "lowpass":
+            biquadFilter.type = "highpass";
+            break;
+
+        case "highpass":
+            biquadFilter.type = "bandpass";
+            break;
+
+        case "bandpass":
+            biquadFilter.type = "lowpass";
+            break;
+
+        default:
+            console.log("biquadHandler error!");
+            break;
+    }
+}
+
 // Apply biquad filter based on UV coordinates
 //----------------------------------------------------
 export function applyBiquadFilter(uvX, uvY, state) 
@@ -250,7 +276,7 @@ export function applyBiquadFilter(uvX, uvY, state)
         const q = minQ + (maxQ - minQ) * uvY;
 
         // Apply to filter
-        biquadFilter.type = "lowpass";
+        //biquadFilter.type = "lowpass";
         biquadFilter.frequency.setTargetAtTime(frequency, audioContext.currentTime, 0.01);
         biquadFilter.Q.setTargetAtTime(q, audioContext.currentTime, 0.01);
     }
