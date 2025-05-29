@@ -75,6 +75,7 @@ body{
     transition: 400ms all ease-in-out;
     background-image: url("/resources/textures/aphex-logo-dither.png");
     background-size: contain;
+    background-position: center;
 }
 
 #start-screen p{
