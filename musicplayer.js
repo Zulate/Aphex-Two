@@ -283,7 +283,7 @@ export function applyBiquadFilter(uvX, uvY, state)
         const frequency = minFreq * Math.pow(maxFreq / minFreq, uvX);
 
         const minQ = 0.001;
-        const maxQ = 30;
+        const maxQ = 15;
         const q = minQ + (maxQ - minQ) * uvY;
 
         // Apply to filter
@@ -306,13 +306,19 @@ function getSoundGroup(index)
     return null;
 }
 
-async function loadImpulseResponse(url) {
+//----------------------------------------------------
+async function loadImpulseResponse(url) 
+//----------------------------------------------------
+{
     const response = await fetch(url);
     const arrayBuffer = await response.arrayBuffer();
     convolverNode.buffer = await audioContext.decodeAudioData(arrayBuffer);
 }
 
-function enableReverb() {
+//----------------------------------------------------
+function enableReverb() 
+//----------------------------------------------------
+{
     if (!convolverNode.buffer) {
         console.warn("Impulse response not loaded.");
         return;
@@ -328,7 +334,10 @@ function enableReverb() {
     console.log("Reverb enabled");
 }
 
-function disableReverb() {
+//----------------------------------------------------
+function disableReverb() 
+//----------------------------------------------------
+{
     convolverNode.disconnect();
     gainNode.disconnect();
 
