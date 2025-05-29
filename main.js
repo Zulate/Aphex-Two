@@ -345,6 +345,7 @@ function animate()
   composer.render();
 }
 
+setHelpButtonVisible(false)
 animate();
 
 ///////////////////////////////////////////////////////
@@ -493,19 +494,38 @@ renderer.domElement.addEventListener('click', (event) => {
   }*/
 
 
+function setHelpButtonVisible(visible) {
+  const helpButton = document.getElementById('help-button');
+  helpButton.style.display = visible ? 'block' : 'none';
+}
+
+
 document.getElementById('continue-button').addEventListener('click', () => {
   document.getElementById('start-screen').style.opacity = '0%';
   setTimeout(() => {
     document.getElementById('start-screen').style.display = 'none';
-  }, 400)
+    setHelpButtonVisible(false); // show help after leaving start
+  }, 400);
 });
+
 
 document.getElementById('start-button').addEventListener('click', () => {
   document.getElementById('tutorial-screen').style.opacity = '0%';
   setTimeout(() => {
     document.getElementById('tutorial-screen').style.display = 'none';
-  }, 400)
+    setHelpButtonVisible(true); // show help after closing tutorial
+  }, 400);
 });
+
+
+document.getElementById('help-button').addEventListener('click', () => {
+  const tutorialScreen = document.getElementById('tutorial-screen');
+  tutorialScreen.style.display = 'block';
+  void tutorialScreen.offsetWidth;
+  tutorialScreen.style.opacity = '100%';
+  setHelpButtonVisible(false); // hide help while tutorial is open
+});
+
 
 //----------------------------------------------------
 document.getElementById('pan-left').addEventListener('click', () => 

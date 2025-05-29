@@ -127,3 +127,17 @@ body{
     padding: 0vw 1vw 0vw 1vw;
     font-size: 3vw;
 }
+
+#help-button p{
+    cursor: pointer;
+    position: absolute;
+    top: 6vh;
+    left: 5vw;
+    transform: translate(-50%, -50%);
+    border: 3px solid white;
+    padding: 0vw 1vw 0vw 1vw;
+    font-size: 3vw;
+
+    font-family: Helvetipixel;
+    color: white;
+}
