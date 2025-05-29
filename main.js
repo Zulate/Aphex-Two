@@ -479,10 +479,17 @@ renderer.domElement.addEventListener('click', (event) =>
   }*/
 });
 
-document.getElementById('start-button').addEventListener('click', () => {
+document.getElementById('continue-button').addEventListener('click', () => {
   document.getElementById('start-screen').style.opacity = '0%';
   setTimeout(() => {
     document.getElementById('start-screen').style.display = 'none';
+  }, 400)
+});
+
+document.getElementById('start-button').addEventListener('click', () => {
+  document.getElementById('tutorial-screen').style.opacity = '0%';
+  setTimeout(() => {
+    document.getElementById('tutorial-screen').style.display = 'none';
   }, 400)
 });
 
