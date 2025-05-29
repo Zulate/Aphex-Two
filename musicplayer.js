@@ -43,6 +43,10 @@ const audioNodes = [];
 const gainNode = audioContext.createGain();
 const distortion = audioContext.createWaveShaper();
 const biquadFilter = audioContext.createBiquadFilter();
+let convolverNode = audioContext.createConvolver();
+
+let reverbEnabled = false;
+
 
 ///////////////////////////////////////////////////////
 // Main
@@ -66,20 +70,21 @@ function setup()
     trackList[1] = document.querySelectorAll("audio");
 
     // Set up audio context
-    trackList[1].forEach(audio => 
-    {
-        audio.loop = true;
-        const track = audioContext.createMediaElementSource(audio);
-        track.connect(distortion);
-        distortion.connect(biquadFilter);
-        biquadFilter.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+    trackList[1].forEach(audio => {
+    audio.loop = true;
+    const track = audioContext.createMediaElementSource(audio);
+    track.connect(distortion);
+    distortion.connect(biquadFilter);
+    biquadFilter.connect(gainNode);
+    gainNode.connect(audioContext.destination);
 
-        audioNodes.push(track);
-    });
+    audioNodes.push(track);
+});
 
+    convolverNode.normalize = true;
     biquadFilter.type = "lowpass";
-    
+    loadImpulseResponse("resources/audio/reverb.wav");
+
     // Debug
     console.log(trackList[0]);
     console.log(trackList[1]);
@@ -145,6 +150,12 @@ export function buttonsReader(button)
             break;
         case "DX100-right":
             buttonsHandler(6);
+            break;
+        case "joint":
+            if (!reverbEnabled) {
+                enableReverb();
+                setTimeout(disableReverb, 20000); // Disable after 20 seconds
+            }
             break;
         default:
             console.log("buttonsReader error!");
@@ -293,4 +304,36 @@ function getSoundGroup(index)
         }
     }
     return null;
+}
+
+async function loadImpulseResponse(url) {
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    convolverNode.buffer = await audioContext.decodeAudioData(arrayBuffer);
+}
+
+function enableReverb() {
+    if (!convolverNode.buffer) {
+        console.warn("Impulse response not loaded.");
+        return;
+    }
+
+    gainNode.disconnect();
+    convolverNode.disconnect();
+
+    gainNode.connect(convolverNode);
+    convolverNode.connect(audioContext.destination);
+
+    reverbEnabled = true;
+    console.log("Reverb enabled");
+}
+
+function disableReverb() {
+    convolverNode.disconnect();
+    gainNode.disconnect();
+
+    gainNode.connect(audioContext.destination);
+
+    reverbEnabled = false;
+    console.log("Reverb disabled");
 }
