@@ -419,6 +419,11 @@ renderer.domElement.addEventListener('mousemove', (event) =>
     }
   });
 
+  if (intersects.length > 0) {
+  const hoveredObject = intersects[0].object;
+  hoveredObject.material.color.set(0xff9429);
+}
+
 /*
   if(objectRayCaster.intersectObject(Keys1).length > 0) {
     Keys1.material.color.set(0xff0000);
@@ -457,11 +462,12 @@ renderer.domElement.addEventListener('click', (event) =>
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-  interactiveObjects.forEach((object) => {
-    if(objectRayCaster.intersectObject(object).length > 0) {
-      buttonsReader(object.name);
-    }
-  });
+const intersects = objectRayCaster.intersectObjects(interactiveObjects, true);
+if (intersects.length > 0) {
+  const clickedObject = intersects[0].object;
+  buttonsReader(clickedObject.name);
+}
+
   
 /*
   if(objectRayCaster.intersectObject(Keys1).length > 0) {
