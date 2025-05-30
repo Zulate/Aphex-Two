@@ -73,7 +73,7 @@ body{
     font-family: Helvetipixel;
     color: white;
     transition: 400ms all ease-in-out;
-    background-image: url("/resources/textures/aphex-logo-dither.png");
+    background-image: url("/resources/textures/aphexstwin-start.png");
     background-size: contain;
     background-position: center;
 }
@@ -91,15 +91,15 @@ body{
     background-color: green;
 }
 
-#continue-button p{
+#start-button p{
     cursor: pointer;
     position: absolute;
-    top: 70vh;
+    top: 88vh;
     left: 50vw;
     transform: translate(-50%, -50%);
     border: 3px solid white;
     padding: 0vw 1vw 0vw 1vw;
-    font-size: 3vw;
+    font-size: 50px;
 }
 
 #tutorial-screen{
@@ -113,11 +113,13 @@ body{
     color: white;
     transition: 400ms all ease-in-out;
     background-image: url("/resources/textures/aphexstwin-tutorial.png");
-    background-size: contain;
+    background-size: 80%;
+    background-repeat: no-repeat;
     background-position: center center;
+    display: none;
 }
 
-#start-button p{
+#return-button p{
     cursor: pointer;
     position: absolute;
     top: 70vh;
@@ -131,13 +133,11 @@ body{
 #help-button p{
     cursor: pointer;
     position: absolute;
-    top: 6vh;
-    left: 5vw;
-    transform: translate(-50%, -50%);
+    top: 0vh;
+    left: 0vw;
     border: 3px solid white;
     padding: 0vw 1vw 0vw 1vw;
-    font-size: 3vw;
-
+    font-size: 2vw;
     font-family: Helvetipixel;
     color: white;
 }

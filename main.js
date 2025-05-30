@@ -296,10 +296,6 @@ function initModelLogic(model)
           Keys2 = child;
           interactiveObjects.push(Keys2);
         break;
-        case 'Keys-3':
-          Keys3 = child;
-          interactiveObjects.push(Keys3);
-        break;
         case 'joint':
           Joint = child;
           interactiveObjects.push(Joint);
@@ -417,7 +413,7 @@ renderer.domElement.addEventListener('mousemove', (event) =>
     if(objectRayCaster.intersectObject(object).length > 0) {
       object.material.color.set(0xff9429);
     } else {
-      if (object.name === 'Cube064' || object.name === 'Cube098') {
+      if (object.name === 'Cube064_1' || object.name === 'Cube098') {
         object.material.color.set(0x000000);
       } else {
         object.material.color.set(0xffffff);
@@ -461,16 +457,16 @@ function setHelpButtonVisible(visible) {
 }
 
 
-document.getElementById('continue-button').addEventListener('click', () => {
+document.getElementById('start-button').addEventListener('click', () => {
   document.getElementById('start-screen').style.opacity = '0%';
   setTimeout(() => {
     document.getElementById('start-screen').style.display = 'none';
-    setHelpButtonVisible(false); // show help after leaving start
+    setHelpButtonVisible(true); // show help after leaving start
   }, 400);
 });
 
 
-document.getElementById('start-button').addEventListener('click', () => {
+document.getElementById('return-button').addEventListener('click', () => {
   document.getElementById('tutorial-screen').style.opacity = '0%';
   setTimeout(() => {
     document.getElementById('tutorial-screen').style.display = 'none';

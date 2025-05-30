@@ -24,16 +24,15 @@ let trackList = [[], []];
 // 3D scene inputs 
 let keys1 = "paused";
 let keys2 = "paused";
-let keys3 = "paused";
 let ridgesLeft = "paused";
 let ridgesRight = "paused";
 let dx100Left = "paused";
 let dx100Right = "paused";
 
 const soundGroups = {
-  bass: [0, 1, 2],           // Keys-1, Keys-2, Keys-3
-  drums: [3, 4],             // Cube064, Cube098
-  melody: [5, 6]             // DX100-left, DX100-right
+  bass: [0, 1],           // Keys-1, Keys-2, Keys-3
+  drums: [2, 3],             // Cube064, Cube098
+  melody: [4, 5]             // DX100-left, DX100-right
 };
 
 // Audio context
@@ -66,7 +65,7 @@ function setup()
 });
 
     // Set up tracklist
-    trackList[0] = [keys1, keys2, keys3, ridgesLeft, ridgesRight, dx100Left, dx100Right];
+    trackList[0] = [keys1, keys2, ridgesLeft, ridgesRight, dx100Left, dx100Right];
     trackList[1] = document.querySelectorAll("audio");
 
     // Set up audio context
@@ -136,20 +135,17 @@ export function buttonsReader(button)
         case "Keys-2":
             buttonsHandler(1);
             break;
-        case "Keys-3":
+        case "Cube064_1":
             buttonsHandler(2);
             break;
-        case "Cube064":
+        case "Cube098":
             buttonsHandler(3);
             break;
-        case "Cube098":
+        case "DX100-left":
             buttonsHandler(4);
             break;
-        case "DX100-left":
-            buttonsHandler(5);
-            break;
         case "DX100-right":
-            buttonsHandler(6);
+            buttonsHandler(5);
             break;
         case "joint":
             if (!reverbEnabled) {
