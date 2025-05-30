@@ -59,7 +59,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 document.body.appendChild(renderer.domElement);
 
-renderer.setPixelRatio(window.devicePixelRatio * 0.6);
+/* renderer.setPixelRatio(window.devicePixelRatio * 0.6); */
 /* const controls = new OrbitControls(camera, renderer.domElement); */
 
 // Lights
@@ -266,6 +266,8 @@ const lightSettings = {
   bloomThreshold: bloomPass.threshold,
   selectShader: shaderSelect,
 };
+
+gui.hide();
 
 ///////////////////////////////////////////////////////
 // Functions
