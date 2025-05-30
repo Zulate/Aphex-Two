@@ -428,32 +428,6 @@ renderer.domElement.addEventListener('mousemove', (event) =>
   hoveredObject.material.color.set(0xff9429);
 }
 
-/*
-  if(objectRayCaster.intersectObject(Keys1).length > 0) {
-    Keys1.material.color.set(0xff0000);
-    Keys2.material.color.set(0xffffff);
-    Keys3.material.color.set(0xffffff);
-  } else if(objectRayCaster.intersectObject(Keys2).length > 0) {
-    Keys1.material.color.set(0xffffff);
-    Keys2.material.color.set(0xff0000);
-    Keys3.material.color.set(0xffffff);
-  } else if(objectRayCaster.intersectObject(Keys3).length > 0) {
-    Keys1.material.color.set(0xffffff);
-    Keys2.material.color.set(0xffffff);
-    Keys3.material.color.set(0xff0000);
-  }else if(objectRayCaster.intersectObject(Ridges1).length > 0 || objectRayCaster.intersectObject(Ridges1Buttons).length > 0) {
-    Ridges1.material.color.set(0xff0000);
-    Ridges1Buttons.material.color.set(0xff0000);
-  }else if (objectRayCaster.intersectObject(Ridges2).length > 0 || objectRayCaster.intersectObject(Ridges2Buttons).length > 0) {
-    Ridges2.material.color.set(0xff0000);
-    Ridges2Buttons.material.color.set(0xff0000);
-  }else {
-    Keys1.material.color.set(0xffffff);
-    Keys2.material.color.set(0xffffff);
-    Keys3.material.color.set(0xffffff);
-    Ridges1.material.color.set(0x000000);
-    Ridges2.material.color.set(0x000000);
-  }*/
 });
 renderer.domElement.addEventListener('click', (event) => {
   const objectRayCaster = new THREE.Raycaster();
@@ -477,21 +451,6 @@ renderer.domElement.addEventListener('click', (event) => {
   biquadSelector();
   }
 });
-  
-/*
-  if(objectRayCaster.intersectObject(Keys1).length > 0) {
-    buttonsReader(Keys1.name);
-  } else if(objectRayCaster.intersectObject(Keys2).length > 0) {
-    buttonsReader(Keys2.name);
-  } else if(objectRayCaster.intersectObject(Keys3).length > 0) {
-    buttonsReader(Keys3.name);
-  } else if(objectRayCaster.intersectObject(Ridges1).length > 0 || objectRayCaster.intersectObject(Ridges1Buttons).length > 0) {
-    buttonsReader(Ridges1.name);
-  }else if (objectRayCaster.intersectObject(Ridges2).length > 0 || objectRayCaster.intersectObject(Ridges2Buttons).length > 0) {
-    buttonsReader(Ridges2.name);
-  }else {
-    console.log("Nothing clicked");
-  }*/
 
 
 function setHelpButtonVisible(visible) {
